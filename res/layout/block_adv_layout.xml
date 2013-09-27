@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/test"
+    android:gravity="center" >
+
+    <com.seekting.study.view.BlockADVView
+        android:id="@+id/block_adv_view"
+        android:layout_width="200dip"
+        android:layout_height="40dip"
+        android:layoutAnimation="@anim/akbm_alpha_in" >
+    </com.seekting.study.view.BlockADVView>
+
+</LinearLayout>
