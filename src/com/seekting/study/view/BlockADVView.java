@@ -11,7 +11,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -82,6 +81,14 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
         hided, showing, hiding, showed, finishing;
     }
 
+    public Status getStatus() {
+        return mStatus;
+    }
+
+    public void setStatus(Status mStatus) {
+        this.mStatus = mStatus;
+    }
+
     public BlockADVView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mStatus = Status.hided;
@@ -133,7 +140,7 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-//        Log.d(TAG, "onDraw" + mBlockADVs);
+        // Log.d(TAG, "onDraw" + mBlockADVs);
         int width = getMeasuredWidth();
         int height = getMeasuredHeight();
         FontMetrics fontMetrics = mPaint.getFontMetrics();
@@ -166,7 +173,7 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
 
     public void hide(final boolean animator, final boolean isFinish) {
 
-        Log.d(TAG, "hide" + "isFinish" + isFinish);
+        Log.d(TAG, "hide()方法" + "isFinish" + isFinish);
 
         post(new Runnable() {
 
@@ -213,7 +220,7 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
         // 如果正在隐藏或正在结束,就不刷新数字
         if (mStatus == Status.finishing || mStatus == Status.hiding) {
             mHandler.removeMessages(INVALIDATE_MESSSAGE);
-            Log.d(TAG, "无视");
+            Log.d(TAG, "收到setAdvCount()因为界面正在隐藏,所以不做任何响应");
             return;
         } else if (mStatus == Status.hided) {
             show(true, isFinish);
@@ -229,6 +236,9 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
     }
 
     public void finish() {
+        Log.d(TAG, "finish()");
+        mHandler.removeMessages(FINISH_MESSAGE);
+        mHandler.removeMessages(HIDE_MESSSAGE);
         mStatus = Status.finishing;
         Message message = mHandler.obtainMessage();
         message.arg1 = ISFINISH;
