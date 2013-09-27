@@ -84,6 +84,7 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
 
     public BlockADVView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mStatus = Status.hided;
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -124,6 +125,7 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
         mHideAnimator.setDuration(ANIMATOR_TIME);
         mHideAnimator.addListener(this);
         mShowAnimator.addListener(this);
+        setVisibility(View.GONE);
 
     }
 
@@ -131,6 +133,7 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+//        Log.d(TAG, "onDraw" + mBlockADVs);
         int width = getMeasuredWidth();
         int height = getMeasuredHeight();
         FontMetrics fontMetrics = mPaint.getFontMetrics();
@@ -162,6 +165,8 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
     }
 
     public void hide(final boolean animator, final boolean isFinish) {
+
+        Log.d(TAG, "hide" + "isFinish" + isFinish);
 
         post(new Runnable() {
 
@@ -199,22 +204,28 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
         mHandler.removeMessages(HIDE_MESSSAGE);
         mHandler.removeMessages(INVALIDATE_MESSSAGE);
         mBlockADVs = 0;
+        mStatus = Status.hided;
 
     }
 
     public void setAdvCount(int count, boolean isFinish) {
 
-        int visiblity = getVisibility();
-        if (visiblity != View.VISIBLE) {
-            show(true, isFinish);
-        }
         // 如果正在隐藏或正在结束,就不刷新数字
         if (mStatus == Status.finishing || mStatus == Status.hiding) {
+            mHandler.removeMessages(INVALIDATE_MESSSAGE);
+            Log.d(TAG, "无视");
+            return;
+        } else if (mStatus == Status.hided) {
+            show(true, isFinish);
+            mBlockADVs = count;
+            mHandler.sendEmptyMessage(INVALIDATE_MESSSAGE);
             return;
         }
         mBlockADVs = count;
         mHandler.sendEmptyMessage(INVALIDATE_MESSSAGE);
-
+        if (isFinish) {
+            finish();
+        }
     }
 
     public void finish() {
@@ -227,14 +238,14 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
 
     }
 
-    public void show(final boolean animator, boolean isFinish) {
+    private void show(final boolean animator, boolean isFinish) {
         Log.d(TAG, "show()");
 
         post(new Runnable() {
             @Override
             public void run() {
                 if (getVisibility() == View.VISIBLE) {
-                    mStatus=Status.showed;
+                    mStatus = Status.showed;
                     return;
                 }
                 setVisibility(View.VISIBLE);

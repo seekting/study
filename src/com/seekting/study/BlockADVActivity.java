@@ -31,7 +31,7 @@ public class BlockADVActivity extends BaseActivity {
                     int n = (int) (Math.random() * 10);
                     for (int i = 0; i < n; i++) {
                         blockADVView.setAdvCount(i, false);
-                        int time = (int) (1000 * Math.random());
+                        int time = (int) (1000 * Math.random() + 2000);
                         try {
                             Thread.sleep(time);
                         } catch (InterruptedException e) {
@@ -39,7 +39,8 @@ public class BlockADVActivity extends BaseActivity {
                         }
                     }
 
-                    blockADVView.setAdvCount(20, true);
+                    // blockADVView.setAdvCount(20, true);
+                    blockADVView.finish();
                 }
 
             }
