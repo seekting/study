@@ -7,9 +7,27 @@
 
     <com.seekting.study.view.BlockADVView
         android:id="@+id/block_adv_view"
-        android:layout_width="200dip"
-        android:layout_height="40dip"
-        android:layoutAnimation="@anim/akbm_alpha_in" >
+        android:layout_width="wrap_content"
+        android:layout_height="41dip"
+        android:background="@drawable/block_adv_toast_bg"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ad_logo"
+            android:drawablePadding="10dip"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:singleLine="true"
+            android:textColor="#ffffffff" />
+
+        <View
+            android:id="@+id/close_btn"
+            android:layout_width="40dip"
+            android:layout_height="match_parent"
+            android:background="@drawable/block_adv_toast_btn_selector" />
     </com.seekting.study.view.BlockADVView>
 
 </LinearLayout>

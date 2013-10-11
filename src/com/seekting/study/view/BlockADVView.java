@@ -5,16 +5,18 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.FontMetrics;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.seekting.study.R;
 
@@ -23,7 +25,7 @@ import com.seekting.study.R;
  * 
  * @author 张兴挺
  */
-public class BlockADVView extends View implements OnClickListener, AnimatorListener {
+public class BlockADVView extends LinearLayout implements OnClickListener, AnimatorListener {
 
     // Queue<SuperActivityToast> mQueue;
 
@@ -76,7 +78,10 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
 
     Status mStatus;
 
-    enum Status {
+    TextView mText;
+    View closeBtn;
+
+    public static enum Status {
 
         hided, showing, hiding, showed, finishing;
     }
@@ -85,13 +90,14 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
         return mStatus;
     }
 
-    public void setStatus(Status mStatus) {
-        this.mStatus = mStatus;
+    public void setStatus(Status status) {
+        mStatus = status;
+        Log.d(TAG, "setStatus " + status);
     }
 
     public BlockADVView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mStatus = Status.hided;
+        setStatus(Status.hided);
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -103,7 +109,7 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
 
                         break;
                     case INVALIDATE_MESSSAGE:
-                        invalidate();
+                        refresh();
                         break;
                     case RESET_MESSSAGE: {
                         doReSet();
@@ -118,14 +124,14 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
                 }
             }
         };
+
         mPaint = new Paint();
-        mPaint.setTextSize(30);
-        mLeftText = "拦截到";
+        float textSize = 30;
+        mPaint.setTextSize(textSize);
+        mLeftText = "已拦截";
         mRightText = "条广告";
         mCountPadding = 5;
         mPaint.setAntiAlias(true);
-        setBackgroundResource(R.drawable.block_adv_toast_bg);
-        setOnClickListener(this);
         mShowAnimator = ObjectAnimator.ofFloat(this, "alpha", 0f, 1f);
         mShowAnimator.setDuration(ANIMATOR_TIME);
         mHideAnimator = ObjectAnimator.ofFloat(this, "alpha", 1f, 0f);
@@ -137,33 +143,49 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        // Log.d(TAG, "onDraw" + mBlockADVs);
-        int width = getMeasuredWidth();
-        int height = getMeasuredHeight();
-        FontMetrics fontMetrics = mPaint.getFontMetrics();
-
-        int baseLine = (int) ((height - (fontMetrics.ascent + fontMetrics.descent)) / 2);
-        float leftTextWidth = mPaint.measureText(mLeftText);
-        float advCountWidth = mPaint.measureText(String.valueOf(mBlockADVs));
-        float rightTextWidth = mPaint.measureText(mRightText);
-        float allTextWidth = (leftTextWidth + advCountWidth + rightTextWidth);
-
-        mPaint.setColor(mleftRightColor);
-        float x = (width - allTextWidth) / 2;
-        canvas.drawText(mLeftText, x, baseLine, mPaint);
-        mPaint.setColor(mCountColor);
-        x = x + leftTextWidth + mCountPadding;
-        canvas.drawText(String.valueOf(mBlockADVs), x, baseLine,
-                mPaint);
-        mPaint.setColor(mleftRightColor);
-        x = x + advCountWidth + mCountPadding;
-        canvas.drawText(mRightText, x, baseLine,
-                mPaint);
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mText = (TextView) findViewById(R.id.text);
+        closeBtn = findViewById(R.id.close_btn);
+        closeBtn.setOnClickListener(this);
+        setOnClickListener(this);
 
     }
+
+    //
+    // @Override
+    // protected void onDraw(Canvas canvas) {
+    // super.onDraw(canvas);
+    //
+    // mBackgroundDrawable.draw(canvas);
+    // mADLogo.draw(canvas);
+    //
+    // // Log.d(TAG, "onDraw" + mBlockADVs);
+    // int width = getMeasuredWidth();
+    // int height = getMeasuredHeight();
+    // FontMetrics fontMetrics = mPaint.getFontMetrics();
+    //
+    // int baseLine = (int) ((height - (fontMetrics.ascent +
+    // fontMetrics.descent)) / 2);
+    // float leftTextWidth = mPaint.measureText(mLeftText);
+    // float advCountWidth = mPaint.measureText(String.valueOf(mBlockADVs));
+    // float rightTextWidth = mPaint.measureText(mRightText);
+    // float allTextWidth = (leftTextWidth + advCountWidth +
+    // rightTextWidth);
+    //
+    // mPaint.setColor(mleftRightColor);
+    // float x = (width - allTextWidth) / 2;
+    // canvas.drawText(mLeftText, x, baseLine, mPaint);
+    // mPaint.setColor(mCountColor);
+    // x = x + leftTextWidth + mCountPadding;
+    // canvas.drawText(String.valueOf(mBlockADVs), x, baseLine,
+    // mPaint);
+    // mPaint.setColor(mleftRightColor);
+    // x = x + advCountWidth + mCountPadding;
+    // canvas.drawText(mRightText, x, baseLine,
+    // mPaint);
+    //
+    // }
 
     @Override
     public void onClick(View v) {
@@ -175,7 +197,7 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
 
         Log.d(TAG, "hide()方法" + "isFinish" + isFinish);
 
-        post(new Runnable() {
+        mHandler.post(new Runnable() {
 
             @Override
             public void run() {
@@ -211,8 +233,7 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
         mHandler.removeMessages(HIDE_MESSSAGE);
         mHandler.removeMessages(INVALIDATE_MESSSAGE);
         mBlockADVs = 0;
-        mStatus = Status.hided;
-
+        setStatus(Status.hided);
     }
 
     public void setAdvCount(int count, boolean isFinish) {
@@ -235,11 +256,25 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
         }
     }
 
+    private void refresh() {
+        StringBuffer sbBuffer = new StringBuffer();
+        sbBuffer.append(mLeftText);
+        // "<font color=#E61A6B>红色代码</font>
+        sbBuffer.append("<font color=#ffff66>");
+        sbBuffer.append(mBlockADVs);
+        sbBuffer.append("</font>");
+        sbBuffer.append(mRightText);
+        Spanned sp = Html.fromHtml(sbBuffer.toString());
+        mText.setText(sp);
+        Log.d(TAG, "是否显示" + getMeasuredHeight());
+    }
+
     public void finish() {
         Log.d(TAG, "finish()");
         mHandler.removeMessages(FINISH_MESSAGE);
         mHandler.removeMessages(HIDE_MESSSAGE);
-        mStatus = Status.finishing;
+
+        setStatus(Status.finishing);
         Message message = mHandler.obtainMessage();
         message.arg1 = ISFINISH;
         message.what = HIDE_MESSSAGE;
@@ -248,26 +283,29 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
 
     }
 
-    private void show(final boolean animator, boolean isFinish) {
+    boolean needFinish;
+
+    private void show(final boolean animator, final boolean isFinish) {
         Log.d(TAG, "show()");
 
-        post(new Runnable() {
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
                 if (getVisibility() == View.VISIBLE) {
-                    mStatus = Status.showed;
+                    setStatus(Status.showed);
                     return;
                 }
                 setVisibility(View.VISIBLE);
                 if (animator) {
                     mShowAnimator.start();
+                    needFinish = isFinish;
+                } else {
+                    if (isFinish) {
+                        finish();
+                    }
                 }
             }
         });
-        if (isFinish) {
-            finish();
-            return;
-        }
 
     }
 
@@ -275,9 +313,9 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
     public void onAnimationStart(Animator animation) {
 
         if (animation == mHideAnimator) {
-            mStatus = Status.hiding;
+            setStatus(Status.hiding);
         } else if (animation == mShowAnimator) {
-            mStatus = Status.showing;
+            setStatus(Status.showing);
         }
     }
 
@@ -286,11 +324,15 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
 
         if (animation == mShowAnimator) {
 
-            mStatus = Status.showed;
+            setStatus(Status.showed);
+            if (needFinish) {
+                finish();
+                needFinish = false;
+            }
         }
         if (animation == mHideAnimator) {
             setVisibility(View.GONE);
-            mStatus = Status.hided;
+            setStatus(Status.hided);
         }
     }
 
@@ -302,5 +344,12 @@ public class BlockADVView extends View implements OnClickListener, AnimatorListe
     @Override
     public void onAnimationRepeat(Animator animation) {
 
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        Log.d(TAG, "onDetatch");
+        mHandler.removeCallbacksAndMessages(null);
     }
 }

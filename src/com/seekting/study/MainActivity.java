@@ -37,6 +37,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
         sparseArray.append(2, new WellComeActivity());
         sparseArray.append(3, new RouKongTextActivity());
         sparseArray.append(4, new BlockADVActivity());
+        sparseArray.append(5, new PhoneModelActivity());
     }
 
     private class MyAdapter extends BaseAdapter {

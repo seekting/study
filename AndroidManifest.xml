@@ -32,6 +32,8 @@
         </activity>
         <activity android:name="com.seekting.study.BlockADVActivity" >
         </activity>
+        <activity android:name="com.seekting.study.PhoneModelActivity" >
+        </activity>
     </application>
 
 </manifest>

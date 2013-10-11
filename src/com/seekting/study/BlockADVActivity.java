@@ -14,6 +14,7 @@ public class BlockADVActivity extends BaseActivity {
 
     BlockADVView blockADVView;
 
+    boolean run=true;
     public BlockADVActivity() {
         name = "¹ã¸æÀ¹½ØÐü¸¡´°";
     }
@@ -28,7 +29,7 @@ public class BlockADVActivity extends BaseActivity {
             @Override
             public void run() {
 
-                while (true) {
+                while (run) {
                     int n = (int) (Math.random() * 20);
                     for (int i = 0; i < n; i++) {
                         blockADVView.setAdvCount(i, false);
@@ -48,5 +49,11 @@ public class BlockADVActivity extends BaseActivity {
             }
         });
         thread.start();
+    }
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        run=false;
     }
 }
