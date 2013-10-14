@@ -4,5 +4,9 @@
     <string name="app_name">SeektingStudy</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
+    <string name="add_in_fav">Add in fav </string>
+    <string name="fav_history">Fav/History</string>
+    <string name="send_to_desk">Send to Desk</string>
+    <string name="share">Share</string>
 
 </resources>
