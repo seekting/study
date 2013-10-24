@@ -17,15 +17,21 @@ public class ShareActivity extends BaseActivity implements OnClickListener {
         name = "系统分享";
     }
 
+    Button textShare;
+    Button imgShare;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Button b = new Button(this);
-        b.setText(name);
-        b.setOnClickListener(this);
-        setContentView(b);
+
+        setContentView(R.layout.share);
+        textShare = (Button) findViewById(R.id.share_text);
+        imgShare = (Button) findViewById(R.id.share_img);
+        textShare.setOnClickListener(this);
+        imgShare.setOnClickListener(this);
     }
-    public static void share(Context context,String activityTitle, String msgTitle,
+
+    public static void share(Context context, String activityTitle, String msgTitle,
             String msgText,
             String imgPath) {
         Intent intent = new Intent(Intent.ACTION_SEND);
@@ -40,12 +46,12 @@ public class ShareActivity extends BaseActivity implements OnClickListener {
             }
         }
         intent.putExtra(Intent.EXTRA_SUBJECT, msgTitle);
-//        msgText="<a href=\"http://www.baidu.com\">百度</a>";
-        
-        
-//        intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(TextUtils.htmlEncode(msgText)));
+        // msgText="<a href=\"http://www.baidu.com\">百度</a>";
+
+        // intent.putExtra(Intent.EXTRA_TEXT,
+        // Html.fromHtml(TextUtils.htmlEncode(msgText)));
         intent.putExtra(Intent.EXTRA_TEXT, msgText);
-//        intent.putExtra(Intent.EXTRA_HTML_TEXT, Html.fromHtml(msgText));
+        // intent.putExtra(Intent.EXTRA_HTML_TEXT, Html.fromHtml(msgText));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(Intent.createChooser(intent, activityTitle));
     }
@@ -53,7 +59,22 @@ public class ShareActivity extends BaseActivity implements OnClickListener {
     @Override
     public void onClick(View v) {
 
-        share(this, "title", "message title", "message text", null);
+        int id = v.getId();
+        switch (id) {
+            case R.id.share_text:
+                share(this, "title", "message title", "message text", null);
+                break;
+
+            case R.id.share_img: {
+                String path="";
+                share(this, "title", "message title", "message text", path);
+                
+                break;
+            }
+            default:
+                break;
+        }
+
     }
 
 }
