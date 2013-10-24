@@ -1,0 +1,37 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="这是一个纵向的seekbar,当点击  显示  时会显示出来,过一段时间它会隐藏" />
+
+        <Button
+            android:id="@+id/show"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="显示" />
+
+        <Button
+            android:id="@+id/show_cycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="循环显示" />
+
+        <Button
+            android:id="@+id/hide_cycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="循环隐藏" />
+    </LinearLayout>
+
+    <include layout="@layout/bright_value_seek_view" />
+
+</FrameLayout>

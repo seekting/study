@@ -41,6 +41,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
         sparseArray.append(6, new PopWindowActivity());
         sparseArray.append(7, new DeskTopActivity());
         sparseArray.append(8, new ShareActivity());
+        sparseArray.append(9, new VerticalSeekBarActivity());
     }
 
     private class MyAdapter extends BaseAdapter {

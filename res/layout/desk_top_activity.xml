@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="添加快捷方式" >
+    </Button>
+
+    <Button
+        android:id="@+id/delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="删除快捷方式" >
+    </Button>
+    <Button
+        android:id="@+id/my_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="我的视频" >
+    </Button>
+
+</LinearLayout>

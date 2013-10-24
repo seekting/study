@@ -1,0 +1,42 @@
+<com.seekting.study.view.BrightValueSeekView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bright_value_seek_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical|right"
+    android:visibility="gone" >
+
+    <LinearLayout
+        android:layout_width="40dip"
+        android:layout_height="250dip"
+        android:layout_marginRight="10dip"
+        android:background="@drawable/bright_value_bg"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:weightSum="1" >
+
+        <com.seekting.study.view.VerticalSeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="wrap_content"
+            android:layout_height="0dip"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15.5dip"
+            android:layout_weight="1"
+            android:max="200"
+            android:maxHeight="4dp"
+            android:minHeight="4dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:progressDrawable="@drawable/akbm_progress_volumn_drawable"
+            android:thumb="@drawable/akbm_thumb_volumn_selector" />
+
+        <ImageView
+            android:layout_width="21dip"
+            android:layout_height="21dip"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dip"
+            android:layout_marginTop="10dip"
+            android:src="@drawable/bright_value_icon" />
+    </LinearLayout>
+
+</com.seekting.study.view.BrightValueSeekView>

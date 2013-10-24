@@ -40,7 +40,7 @@ public class PopWindowActivity extends BaseActivity implements OnClickListener {
             mPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.fav_popup_bg));
 
             mPopupWindow.setFocusable(true);
-            mPopupWindow.setOutsideTouchable(false);
+            mPopupWindow.setOutsideTouchable(true);
             mPopupWindow.showAtLocation(parent1, Gravity.LEFT | Gravity.TOP, 100, 500);
         }
     }
