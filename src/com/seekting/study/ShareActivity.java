@@ -38,7 +38,10 @@ public class ShareActivity extends BaseActivity implements OnClickListener {
         imgShare.setOnClickListener(this);
         share_imgview = (ImageView) findViewById(R.id.share_imgview);
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.share_img);
-        Bitmap bm = ShareControl.makeBarCodeBitmap(this, bitmap);
+        byte[] data=ShareControl.Bitmap2Bytes(bitmap);
+        
+//        Bitmap bm = ShareControl.makeBarCodeBitmap(this, bitmap);
+        Bitmap bm = ShareControl.makeBarCodeBitmap(this, data);
 
         share_imgview.setImageBitmap(bm);
     }
