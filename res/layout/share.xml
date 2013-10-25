@@ -1,0 +1,38 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".MainActivity" >
+
+        <Button
+            android:id="@+id/share_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="文字分享" >
+        </Button>
+
+        <Button
+            android:id="@+id/share_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="图片分享" >
+        </Button>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/share_imgview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </ImageView>
+
+</FrameLayout>

@@ -3,13 +3,18 @@ package com.seekting.study;
 
 import java.io.File;
 
+import com.seekting.study.util.ShareControl;
+
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class ShareActivity extends BaseActivity implements OnClickListener {
 
@@ -20,6 +25,8 @@ public class ShareActivity extends BaseActivity implements OnClickListener {
     Button textShare;
     Button imgShare;
 
+    ImageView share_imgview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +36,11 @@ public class ShareActivity extends BaseActivity implements OnClickListener {
         imgShare = (Button) findViewById(R.id.share_img);
         textShare.setOnClickListener(this);
         imgShare.setOnClickListener(this);
+        share_imgview = (ImageView) findViewById(R.id.share_imgview);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.share_img);
+        Bitmap bm = ShareControl.makeBarCodeBitmap(this, bitmap);
+
+        share_imgview.setImageBitmap(bm);
     }
 
     public static void share(Context context, String activityTitle, String msgTitle,
@@ -66,9 +78,10 @@ public class ShareActivity extends BaseActivity implements OnClickListener {
                 break;
 
             case R.id.share_img: {
-                String path="";
+                String path = "/sdcard/share_img.jpg";
                 share(this, "title", "message title", "message text", path);
-                
+                // getResources().getDrawable()
+
                 break;
             }
             default:
