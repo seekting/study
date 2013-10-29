@@ -1,0 +1,6 @@
+<ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/loadingbar"
+    style="@style/Media_loading"
+    android:layout_width="70dp"
+    android:layout_height="70dp" />

@@ -19,6 +19,8 @@ public class MainActivity extends Activity implements OnItemClickListener {
     SparseArray<BaseActivity> sparseArray;
     ListView list;
 
+    public static final String FRAGMENT = "fragment";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +44,10 @@ public class MainActivity extends Activity implements OnItemClickListener {
         sparseArray.append(7, new DeskTopActivity());
         sparseArray.append(8, new ShareActivity());
         sparseArray.append(9, new VerticalSeekBarActivity());
+        sparseArray.append(10, new TranslateProgressDialogActivity());
+        BaseActivity fragmentActivity = new BaseActivity();
+        fragmentActivity.name = FRAGMENT;
+        sparseArray.append(11, fragmentActivity);
     }
 
     private class MyAdapter extends BaseAdapter {
@@ -79,8 +85,13 @@ public class MainActivity extends Activity implements OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
 
-        Intent intent = new Intent(MainActivity.this, sparseArray.get(position).getClass());
+        if (sparseArray.get(position).name.equals(FRAGMENT)) {
+            Intent intent = new Intent(MainActivity.this, FragmentTest.class);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(MainActivity.this, sparseArray.get(position).getClass());
+            startActivity(intent);
+        }
 
-        startActivity(intent);
     }
 }
