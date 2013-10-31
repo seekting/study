@@ -43,6 +43,8 @@
         </activity>
         <activity android:name="com.seekting.study.VerticalSeekBarActivity" >
         </activity>
+        <activity android:name="com.seekting.study.FlowLayoutActivity" >
+        </activity>
         <activity
             android:name="com.seekting.study.TranslateProgressDialogActivity"
             android:hardwareAccelerated="true" >

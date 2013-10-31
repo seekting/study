@@ -48,6 +48,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
         BaseActivity fragmentActivity = new BaseActivity();
         fragmentActivity.name = FRAGMENT;
         sparseArray.append(11, fragmentActivity);
+        sparseArray.append(12, new FlowLayoutActivity());
     }
 
     private class MyAdapter extends BaseAdapter {

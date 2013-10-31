@@ -2,8 +2,7 @@
 package com.seekting.study;
 
 import java.io.File;
-
-import com.seekting.study.util.ShareControl;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +14,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.seekting.study.util.ShareControl;
 
 public class ShareActivity extends BaseActivity implements OnClickListener {
 
@@ -55,9 +56,14 @@ public class ShareActivity extends BaseActivity implements OnClickListener {
         } else {
             File f = new File(imgPath);
             if (f != null && f.exists() && f.isFile()) {
+                intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                 intent.setType("image/jpeg");
                 Uri u = Uri.fromFile(f);
-                intent.putExtra(Intent.EXTRA_STREAM, u);
+//                intent.putExtra(Intent.EXTRA_STREAM, u);
+                ArrayList<Uri> uris = new ArrayList<Uri>();
+                uris.add(u);
+                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
             }
         }
         intent.putExtra(Intent.EXTRA_SUBJECT, msgTitle);
@@ -66,6 +72,7 @@ public class ShareActivity extends BaseActivity implements OnClickListener {
         // intent.putExtra(Intent.EXTRA_TEXT,
         // Html.fromHtml(TextUtils.htmlEncode(msgText)));
         intent.putExtra(Intent.EXTRA_TEXT, msgText);
+        intent.putExtra(Intent.EXTRA_TITLE, "xxx");
         // intent.putExtra(Intent.EXTRA_HTML_TEXT, Html.fromHtml(msgText));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(Intent.createChooser(intent, activityTitle));
