@@ -2,61 +2,20 @@
 <com.seekting.study.view.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:flow="http://schemas.android.com/apk/res/com.seekting.study"
     android:layout_width="match_parent"
+    android:id="@+id/flow_layout"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    flow:horizontalSpacing="6dip"
+    android:paddingTop="15dip"
+    android:paddingLeft="15dip"
+    android:paddingRight="15dip"
+    flow:horizontalSpacing="20dip"
+    flow:verticalSpacing="15dip"
+    android:paddingBottom="15dip"
+   	flow:orientation="vertical"
+    android:background="#ff00ffff"
+    
      >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#ffffff00"
-        android:text="xxx" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xxxxxxxxx" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xxx" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xxxxxxxxx" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xxx" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xxxxxxxxx" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xxx" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xxxxxxxxx" />
-
-    <TextView
-          android:background="#ffffff00"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xxx" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xxxxxxxxx" />
+   
 
 </com.seekting.study.view.FlowLayout>
