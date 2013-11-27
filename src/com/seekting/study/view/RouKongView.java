@@ -4,6 +4,7 @@ package com.seekting.study.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
@@ -42,10 +43,6 @@ public class RouKongView extends TextView implements OnClickListener {
         mPorterDuffXfermode = new PorterDuffXfermode(Mode.XOR);
     }
 
-    @Override
-    public void draw(Canvas canvas) {
-        onDraw(canvas);
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -74,6 +71,7 @@ public class RouKongView extends TextView implements OnClickListener {
         // int bottom = (int) (mPaint.getFontMetrics().descent -
         // mPaint.getFontMetrics().top)+getPaddingTop();
         int bottom = (int) (0 - mPaint.getFontMetrics().top) + getPaddingTop();
+        mPaint.setColor(Color.argb(255, 0, 0, 0));
         canvas.drawText(getText().toString(), getPaddingLeft(), bottom, mPaint);
         canvas.restoreToCount(sc);
 
@@ -82,10 +80,10 @@ public class RouKongView extends TextView implements OnClickListener {
     @Override
     public void onClick(View v) {
 
-        totol();
+        toggle();
     }
 
-    private void totol() {
+    private void toggle() {
         isChecked = !isChecked;
         invalidate();
     }
