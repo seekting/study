@@ -27,7 +27,7 @@ import android.widget.Toast;
  */
 public class DeskTopActivity extends BaseActivity implements OnClickListener {
 
-    public DeskTopActivity() {  
+    public DeskTopActivity() {
         name = "网页快捷方式";
     }
 
@@ -35,9 +35,9 @@ public class DeskTopActivity extends BaseActivity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.desk_top_activity);
-        Button add=(Button) findViewById(R.id.add);
-        Button delete=(Button) findViewById(R.id.delete);
-        Button myVideo=(Button)findViewById(R.id.my_video);
+        Button add = (Button) findViewById(R.id.add);
+        Button delete = (Button) findViewById(R.id.delete);
+        Button myVideo = (Button) findViewById(R.id.my_video);
         myVideo.setOnClickListener(this);
         add.setOnClickListener(this);
         delete.setOnClickListener(this);
@@ -50,17 +50,18 @@ public class DeskTopActivity extends BaseActivity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==R.id.add){
-        Uri uri = Uri.parse("http://www.baidu.com");
-        Parcelable icon = Intent.ShortcutIconResource.fromContext(this, R.drawable.ic_launcher);
-        if (isShortcutInstalled(name)) {
+        if (v.getId() == R.id.add) {
+            Uri uri = Uri.parse("http://www.baidu.com");
+            Parcelable icon = Intent.ShortcutIconResource.fromContext(this, R.drawable.ic_launcher);
+            if (isShortcutInstalled(name)) {
 
-        } else {
-            addShortcut1(icon, name, uri);
-        }}
-        else if(v.getId()==R.id.delete){
+            } else {
+                addShortcut1(icon, name, uri);
+            }
+        }
+        else if (v.getId() == R.id.delete) {
             deleteShortCut();
-        }else if(v.getId()==R.id.my_video){
+        } else if (v.getId() == R.id.my_video) {
             createOldJinshanShortcut();
         }
     }
@@ -133,7 +134,7 @@ public class DeskTopActivity extends BaseActivity implements OnClickListener {
 
         intentLauncher.setData(uri);
         // 加上这个可以避免有些手机还是会图标重复
-//        intentLauncher.setAction(Intent.ACTION_VIEW);
+        // intentLauncher.setAction(Intent.ACTION_VIEW);
         intentLauncher.setAction("com.ijinshan.intent.action.HOMEPAGE");
 
         // 添加快捷方式的启动方法
@@ -275,7 +276,7 @@ public class DeskTopActivity extends BaseActivity implements OnClickListener {
 
         intentLauncher.setData(uri);
         // 加上这个可以避免有些手机还是会图标重复
-//        intentLauncher.setAction(Intent.ACTION_VIEW);
+        // intentLauncher.setAction(Intent.ACTION_VIEW);
         intentLauncher.setAction("com.ijinshan.intent.action.HOMEPAGE");
 
         // 添加快捷方式的启动方法
@@ -292,21 +293,23 @@ public class DeskTopActivity extends BaseActivity implements OnClickListener {
         return Build.VERSION.SDK_INT;
     }
 
-    public void createOldJinshanShortcut(){
+    public void createOldJinshanShortcut() {
         /**
          * 主要是2.2.0删除2.2.0的快捷方式
          */
-            Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+        Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
 
-            // 快捷方式的名称
-            shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, "我的视频");
-            Intent intentLauncher = new Intent();
-            intentLauncher.setAction(Intent.ACTION_VIEW);
-            intentLauncher.setData(Uri.parse("http://v.m.liebao.cn/?f=android9"));
-            intentLauncher.putExtra("from_shortcut", true);
-            // 添加快捷方式的启动方法
-            intentLauncher.setClassName("com.ijinshan.browser", "com.ijinshan.browser.screen.BrowserActivity");
-            shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intentLauncher);
-            sendBroadcast(shortcut);
+        // 快捷方式的名称
+        shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, "我的视频");
+        Intent intentLauncher = new Intent();
+        intentLauncher.setAction(Intent.ACTION_VIEW);
+        intentLauncher.setData(Uri.parse("http://v.m.liebao.cn/?f=android9"));
+        intentLauncher.putExtra("from_shortcut", true);
+        // 添加快捷方式的启动方法
+        intentLauncher.setClassName("com.ijinshan.browser",
+                "com.ijinshan.browser.screen.BrowserActivity");
+        shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intentLauncher);
+        sendBroadcast(shortcut);
     }
+
 }
