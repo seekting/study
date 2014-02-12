@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -48,12 +47,12 @@ public class ListViewFastScroller extends LinearLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
-        if (x < mSectionPositionTextView.getRight()) {
-            return false;
-        }
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                if (x < mSectionPositionTextView.getRight()) {
+                    return false;
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 float touchY = event.getY();
@@ -63,6 +62,7 @@ public class ListViewFastScroller extends LinearLayout {
                         * (touchY - barHeight * 0.5) / (parentHeight - barHeight));
                 mListView.setSelection(position);
                 setSectionPostionVisibility(View.VISIBLE);
+
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:

@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.seekting.study.R;
+import com.seekting.study.util.UITools;
 import com.seekting.study.view.OverScrollListView.OnOverScrollListener;
 
 public class SuperListView extends FrameLayout {
