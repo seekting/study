@@ -1,0 +1,50 @@
+<com.seekting.study.view.SuperListView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/super_list_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.seekting.study.view.OverScrollListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ff00ffff"
+        android:fastScrollEnabled="true" />
+
+    <Button
+        android:id="@+id/section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#ffff0000" >
+    </Button>
+
+    <com.seekting.study.view.ListViewFastScroller
+        android:id="@+id/fast_scroller"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/fast_scroller_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/section_position"
+                android:layout_width="50dip"
+                android:layout_height="100dip"
+                android:layout_marginLeft="20dip"
+                android:gravity="center"
+                android:text="xxx"
+                android:visibility="invisible" />
+
+            <View
+                android:layout_width="50dip"
+                android:layout_height="100dip"
+                android:background="#ffff00ff" />
+        </LinearLayout>
+    </com.seekting.study.view.ListViewFastScroller>
+
+</com.seekting.study.view.SuperListView>
