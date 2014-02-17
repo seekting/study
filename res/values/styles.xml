@@ -1,14 +1,14 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="AppBaseTheme" parent="android:Theme.Light">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
@@ -19,17 +19,17 @@
 
     <style name="transparentDialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
- <!-- 边框 -->
+        <!-- 边框 -->
         <item name="android:windowIsFloating">true</item>
- <!-- 是否浮现在activity之上 -->
+        <!-- 是否浮现在activity之上 -->
         <item name="android:windowIsTranslucent">false</item>
- <!-- 半透明 -->
+        <!-- 半透明 -->
         <item name="android:windowNoTitle">true</item>
- <!-- 无标题 -->
+        <!-- 无标题 -->
         <item name="android:windowBackground">@color/transparent</item>
- <!-- 背景透明 -->
+        <!-- 背景透明 -->
         <item name="android:backgroundDimEnabled">false</item>
- <!-- 模糊 -->
+        <!-- 模糊 -->
 
     </style>
 
@@ -37,6 +37,32 @@
         <item name="android:indeterminateDuration">1500</item>
         <item name="android:indeterminateDrawable">@drawable/akbm_media_loading</item>
         <item name="android:indeterminateBehavior">repeat</item>
+    </style>
+
+    <style name="textfield_holo_style">
+        <item name="android:background">@drawable/textfield_holo_selector</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColorHint">#ff858585</item>
+        <item name="android:textColor">#ff333333</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="city_select_item">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#ff585858</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:paddingTop">14dip</item>
+        <item name="android:paddingBottom">14dip</item>
+    </style>
+
+    <style name="city_select_section_item">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#fffa8c13</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:paddingTop">10dip</item>
+        <item name="android:paddingBottom">10dip</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">#fff6f6f6</item>
     </style>
 
 </resources>

@@ -1,0 +1,92 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff6f6f6"
+    android:orientation="vertical"
+    android:paddingLeft="16dip"
+    android:paddingTop="14dip" >
+
+    <EditText
+        android:id="@+id/search_city_edt"
+        style="@style/textfield_holo_style"
+        android:layout_width="match_parent"
+        android:layout_height="40dip"
+        android:layout_marginRight="16dip"
+        android:hint="@string/search_city" />
+
+    <com.seekting.study.view.SectionListView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/super_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dip" >
+
+        <com.seekting.study.view.OverScrollListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fastScrollEnabled="false"
+            android:paddingRight="32dip"
+            android:scrollbars="none" />
+
+        <LinearLayout
+            android:id="@+id/section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="32dip"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/text_item"
+                style="@style/city_select_section_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:background="#fffa8c13" >
+            </View>
+        </LinearLayout>
+
+        <com.seekting.study.view.SectionFastScroller
+            android:id="@+id/fast_scroller"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:layout_marginBottom="20dip"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="1px"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="12dip"
+                android:layout_marginRight="15dip"
+                android:layout_marginTop="12dip"
+                android:background="#58585858" />
+
+            <TextView
+                android:id="@+id/section_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-5dip"
+                android:layout_toLeftOf="@+id/fast_scroller_bar"
+                android:background="@drawable/fastscroll_label_right_holo_light"
+                android:gravity="center"
+                android:textColor="#ffffffff"
+                android:textSize="18sp"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/fast_scroller_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/fastscroll_thumb_default_holo" />
+        </com.seekting.study.view.SectionFastScroller>
+    </com.seekting.study.view.SectionListView>
+
+</LinearLayout>

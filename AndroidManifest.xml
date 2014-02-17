@@ -45,7 +45,9 @@
         </activity>
         <activity android:name="com.seekting.study.FlowLayoutActivity" >
         </activity>
-         <activity android:name="com.seekting.study.NodpiActivity" >
+        <activity android:name="com.seekting.study.NodpiActivity" >
+        </activity>
+        <activity android:name="com.seekting.study.FormatCityActivity" >
         </activity>
         <activity
             android:name="com.seekting.study.TranslateProgressDialogActivity"
@@ -53,7 +55,11 @@
         </activity>
         <activity android:name="com.seekting.study.FragmentTest" >
         </activity>
-        <activity android:name="com.seekting.study.SuperListViewActivity" >
+        <activity
+            android:name="com.seekting.study.SuperListViewActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+        </activity>
+        <activity android:name="com.seekting.study.MyListViewActivity" >
         </activity>
     </application>
 
@@ -61,5 +67,6 @@
     <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="com.qihoo360.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

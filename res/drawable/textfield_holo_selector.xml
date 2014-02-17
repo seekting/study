@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 选中时效果 -->
+    <item android:drawable="@drawable/textfield_activated_holo_light" android:state_enabled="true" android:state_focused="true"/>
+    <!-- <item android:drawable="@drawable/textfield_focused_holo_light" android:state_enabled="true" android:state_window_focused="true"/> -->
+    <!-- disable效果 windows焦点在前时  注意写法 -->
+    <!-- <item android:drawable="@drawable/textfield_disabled_focused_holo_light" android:state_enabled="false" android:state_window_focused="true"/> -->
+    <item android:drawable="@drawable/textfield_disabled_holo_light" android:state_enabled="false" android:state_window_focused="false"/>
+    <!-- 默认时效果 -->
+    <item android:drawable="@drawable/textfield_default_holo_light"/>
+
+</selector>

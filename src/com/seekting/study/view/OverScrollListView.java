@@ -27,14 +27,6 @@ public class OverScrollListView extends ListView {
         }
     }
 
-//    @Override
-//    protected boolean overScrollBy(int deltaX, int deltaY, int scrollX,
-//            int scrollY, int scrollRangeX, int scrollRangeY,
-//            int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent) {
-//        return super.overScrollBy(deltaX, deltaY, scrollX, scrollY,
-//                scrollRangeX, scrollRangeY, maxOverScrollX,
-//                200, isTouchEvent);
-//    }
 
     public static interface OnOverScrollListener {
         public void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY);

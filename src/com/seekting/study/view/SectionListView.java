@@ -7,34 +7,33 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.seekting.study.R;
-import com.seekting.study.util.UITools;
 import com.seekting.study.view.OverScrollListView.OnOverScrollListener;
 
-public class SuperListView extends FrameLayout {
+public class SectionListView extends FrameLayout {
 
     private OverScrollListView mListView;
     LinkedHashMap<Section, List<City>> mData;
     private static final int SECTION_TYPE = 0;
     private static final int CITY_TYPE = 1;
     private int mDataSize = 0;
-    private SuperListAdapter mSuperListAdapter;
+    private SectionListAdapter mSectionListAdapter;
 
-    private View mSection;
-    ListViewFastScroller mFastScroller;
+    private TextView mSection;
+    private View mSectionLayout;
+    SectionFastScroller mFastScroller;
 
-    public SuperListView(Context context, AttributeSet attrs) {
+    public SectionListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -42,11 +41,13 @@ public class SuperListView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mListView = (OverScrollListView) findViewById(R.id.list);
-        mSection = findViewById(R.id.section);
-        mSuperListAdapter = new SuperListAdapter();
-        mListView.setAdapter(mSuperListAdapter);
-        mFastScroller = (ListViewFastScroller) findViewById(R.id.fast_scroller);
+        mSectionLayout = findViewById(R.id.section);
+        mSection = (TextView) mSectionLayout.findViewById(R.id.text_item);
+        mSectionListAdapter = new SectionListAdapter();
+        mListView.setAdapter(mSectionListAdapter);
+        mFastScroller = (SectionFastScroller) findViewById(R.id.fast_scroller);
         mFastScroller.setListView(mListView);
+
         mListView.setOnOverScrollListener(new OnOverScrollListener() {
 
             @Override
@@ -59,45 +60,42 @@ public class SuperListView extends FrameLayout {
             }
         });
         mListView.setOnScrollListener(new OnScrollListener() {
-
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                     int totalItemCount) {
-                View v = mSuperListAdapter.findNextSectionView(firstVisibleItem);
+                if (totalItemCount == 0) {
+                    mSection.setVisibility(View.GONE);
+                } else {
+                    mSection.setVisibility(View.VISIBLE);
+                }
+                View v = mSectionListAdapter.findNextSectionView(firstVisibleItem);
                 if (v != null) {
                     int top = v.getTop();
                     if (top <= 0) {
                         translateSection(0);
-                        if (mSection instanceof Button && v instanceof Button) {
-                            Button first = (Button) v;
-                            Button button = (Button) mSection;
-                            button.setText(first.getText());
-                        }
+                        TextView first = (TextView) v.findViewById(R.id.text_item);
+                        mSection.setText(first.getText());
                     } else {
                         if (top <= mSection.getMeasuredHeight()) {
                             translateSection(top - mSection.getMeasuredHeight());
                         } else {
                             translateSection(0);
                         }
-                        if (mSection instanceof Button) {
-                            Item item = mSuperListAdapter.getItem(firstVisibleItem);
-                            Button button = (Button) mSection;
-                            if (item instanceof City)
-                            {
-                                City city = (City) item;
-                                button.setText(city.getSection());
-                            }
-
+                        Item item = mSectionListAdapter.getItem(firstVisibleItem);
+                        if (item instanceof City)
+                        {
+                            City city = (City) item;
+                            mSection.setText(city.getSection());
                         }
+
                     }
                 }
                 if (mFastScroller != null) {
-                    Item item = mSuperListAdapter.getItem(mListView
+                    Item item = mSectionListAdapter.getItem(mListView
                             .getFirstVisiblePosition());
                     String section = "";
                     if (item instanceof Section) {
@@ -116,32 +114,36 @@ public class SuperListView extends FrameLayout {
     }
 
     private void translateSection(int y) {
-        if (mSection != null)
-            mSection.setTranslationY(y);
+        if (mSectionLayout != null)
+            mSectionLayout.setTranslationY(y);
     }
 
     public void setData(LinkedHashMap<Section, List<City>> data) {
-        mData = data;
         if (data != null) {
             mDataSize = data.size();
         } else {
             mDataSize = 0;
         }
-        for (Iterator it = data.keySet().iterator(); it.hasNext();)
+        for (Iterator<Section> it = data.keySet().iterator(); it.hasNext();)
         {
-            Object key = it.next();
+            Section key = it.next();
             List<City> value = data.get(key);
             mDataSize += value.size();
         }
+        mData = data;
+        mSectionListAdapter.notifyDataSetChanged();
+        mListView.setSelection(0);
 
     }
 
-    private class SuperListAdapter extends BaseAdapter {
+    private class SectionListAdapter extends BaseAdapter {
 
         HashMap<Integer, View> mViewMap;
+        LayoutInflater mLayoutInflater;
 
-        public SuperListAdapter() {
+        public SectionListAdapter() {
             mViewMap = new HashMap<Integer, View>();
+            mLayoutInflater = LayoutInflater.from(getContext());
         }
 
         @Override
@@ -160,9 +162,9 @@ public class SuperListView extends FrameLayout {
             if (mData == null) {
                 return null;
             }
-            for (Iterator it = mData.keySet().iterator(); it.hasNext();)
+            for (Iterator<Section> it = mData.keySet().iterator(); it.hasNext();)
             {
-                Item key = (Item) it.next();
+                Section key = it.next();
                 if (cursor == position) {
                     return key;
                 }
@@ -198,21 +200,20 @@ public class SuperListView extends FrameLayout {
             if (convertView == null) {
                 switch (type) {
                     case CITY_TYPE:
-                        TextView text = new TextView(getContext());
-                        text.setTextColor(Color.BLUE);
-                        convertView = text;
-                        text.setTextSize(20);
-                        text.setPadding(0, 20, 0, 20);
+                        View view = mLayoutInflater.inflate(
+                                R.layout.city_select_item, null);
+                        convertView = view;
+
                         break;
                     case SECTION_TYPE:
-                        Button section = new Button(getContext());
-                        section.setTextColor(Color.RED);
+                        View section = mLayoutInflater.inflate(
+                                R.layout.city_select_section_item, null);
                         convertView = section;
                     default:
                         break;
                 }
             }
-            TextView text = (TextView) convertView;
+            TextView text = (TextView) convertView.findViewById(R.id.text_item);
             text.setText(item.getName());
             mViewMap.put(position, convertView);
             return convertView;

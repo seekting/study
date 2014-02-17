@@ -7,19 +7,19 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.seekting.study.R;
 
-public class ListViewFastScroller extends LinearLayout {
+public class SectionFastScroller extends RelativeLayout {
 
     private View mScrollBar;
     private ListView mListView;
     private TextView mSectionPositionTextView;
 
-    public ListViewFastScroller(Context context, AttributeSet attrs) {
+    public SectionFastScroller(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -37,17 +37,24 @@ public class ListViewFastScroller extends LinearLayout {
         int barHeight = mScrollBar.getMeasuredHeight();
         float translationY = ((firstVisibleItem * 1f) / (totalItemCount - visibleItemCount))
                 * (parentHeight - barHeight);
-        mScrollBar.setTranslationY(translationY);
+        translateScrollBar(translationY);
         if (!TextUtils.isEmpty(section)) {
             mSectionPositionTextView.setText(section);
+            translateScrollBar(translationY);
         }
 
+    }
+
+    private void translateScrollBar(float translationY) {
+        mScrollBar.setTranslationY(translationY);
+        if (translationY + mSectionPositionTextView.getMeasuredHeight() > getMeasuredHeight())
+            translationY = getMeasuredHeight() - mSectionPositionTextView.getMeasuredHeight();
+        mSectionPositionTextView.setTranslationY(translationY);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (x < mSectionPositionTextView.getRight()) {
@@ -62,7 +69,6 @@ public class ListViewFastScroller extends LinearLayout {
                         * (touchY - barHeight * 0.5) / (parentHeight - barHeight));
                 mListView.setSelection(position);
                 setSectionPostionVisibility(View.VISIBLE);
-
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:

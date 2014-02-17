@@ -8,5 +8,6 @@
     <string name="fav_history">Fav/History</string>
     <string name="send_to_desk">Send to Desk</string>
     <string name="share">Share</string>
+    <string name="search_city">搜索城市</string>
 
 </resources>
