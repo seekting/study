@@ -49,6 +49,8 @@
         </activity>
         <activity android:name="com.seekting.study.FormatCityActivity" >
         </activity>
+        <activity android:name="com.seekting.study.ShortAddressActivity" >
+        </activity>
         <activity
             android:name="com.seekting.study.TranslateProgressDialogActivity"
             android:hardwareAccelerated="true" >
@@ -69,5 +71,6 @@
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="com.qihoo360.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

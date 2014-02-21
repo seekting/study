@@ -42,6 +42,46 @@ public class FormatCityActivity extends BaseActivity implements OnClickListener 
     private JSONObject toJson(List<HotCity> cities) {
         // 先归类
         LinkedHashMap<String, List<HotCity>> map = new LinkedHashMap<String, List<HotCity>>();
+//        for (char i = 'a'; i <= 'z'; i++) {
+//            map.put(String.valueOf(i), new ArrayList<FormatCityActivity.HotCity>());
+//        }
+//        for (int i = 0; i < cities.size(); i++) {
+//            HotCity city = cities.get(i);
+//            System.out.println(city.head);
+//            map.get(city.head).add(city);
+//        }
+        JSONObject cityGroup = new JSONObject();
+
+        JSONArray data = new JSONArray();
+        try {
+            cityGroup.put("data", data);
+            JSONObject obj = new JSONObject();
+            obj.put("index", "热门");
+            data.put(obj);
+            JSONArray jsonArray = new JSONArray();
+            obj.put("cs", jsonArray);
+
+            for (int i = 0; i < cities.size(); i++)
+            {
+//                String key = it.next();
+//                List<HotCity> value = map.get(key);
+//                for (int i = 0; i < value.size(); i++) {
+                    jsonArray.put(cities.get(i).ToString());
+//                }
+              
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // System.out.println(cityGroup);
+        return cityGroup;
+
+    }
+
+    private JSONObject toJson2(List<HotCity> cities) {
+        // 先归类
+        LinkedHashMap<String, List<HotCity>> map = new LinkedHashMap<String, List<HotCity>>();
         for (char i = 'a'; i <= 'z'; i++) {
             map.put(String.valueOf(i), new ArrayList<FormatCityActivity.HotCity>());
         }

@@ -53,6 +53,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
         sparseArray.append(14, new SuperListViewActivity());
         sparseArray.append(15, new FormatCityActivity());
         sparseArray.append(16, new MyListViewActivity());
+        sparseArray.append(17, new ShortAddressActivity());
     }
 
     private class MyAdapter extends BaseAdapter {
