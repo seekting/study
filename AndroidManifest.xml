@@ -51,6 +51,8 @@
         </activity>
         <activity android:name="com.seekting.study.ShortAddressActivity" >
         </activity>
+        <activity android:name="com.seekting.study.SelectAniActivity" >
+        </activity>
         <activity
             android:name="com.seekting.study.TranslateProgressDialogActivity"
             android:hardwareAccelerated="true" >

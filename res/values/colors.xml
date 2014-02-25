@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
     <color name="transparent">#00000000</color>
+
+    <drawable name="search_engine_select">#ffE5E5E5</drawable>
+    <drawable name="search_engine_unselect">#ffffffff</drawable>
 
 </resources>
