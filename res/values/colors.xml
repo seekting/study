@@ -4,6 +4,6 @@
     <color name="transparent">#00000000</color>
 
     <drawable name="search_engine_select">#ffE5E5E5</drawable>
-    <drawable name="search_engine_unselect">#ffffffff</drawable>
+    <drawable name="search_engine_unselect">#00ffffff</drawable>
 
 </resources>

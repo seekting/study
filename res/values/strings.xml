@@ -9,5 +9,10 @@
     <string name="send_to_desk">Send to Desk</string>
     <string name="share">Share</string>
     <string name="search_city">搜索城市</string>
+    <string name="baidu">百度</string>
+    <string name="google">谷歌</string>
+    <string name="nevel">小说</string>
+    <string name="video">视频</string>
+    <string name="taobao">淘宝</string>
 
 </resources>

@@ -1,22 +1,35 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/search_item_height"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingLeft="13dip" >
+    android:layout_height="@dimen/search_item_height" >
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/search_engine_baidu" />
+    <View
+        android:id="@+id/search_item_bg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/search_item_height"
+        android:duplicateParentState="true" >
+    </View>
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dip"
-        android:text="百度" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="13dip" >
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/search_engine_baidu" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:textColor="@drawable/search_item_title_selector"
+            android:text="百度" />
+    </LinearLayout>
+
+</FrameLayout>

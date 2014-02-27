@@ -52,11 +52,11 @@ public class SelectAniActivity extends BaseActivity implements OnClickListener,
                 mRoot.addView(mSelectLayout, params);
 
                 mSelectLayout.setItemBgRes(R.drawable.search_engine_item_selector);
-                mSelectLayout.addItem(R.drawable.search_engine_baidu, 0);
-                mSelectLayout.addItem(R.drawable.search_engine_google, 0);
-                mSelectLayout.addItem(R.drawable.search_engine_novel, 0);
-                mSelectLayout.addItem(R.drawable.search_engine_video, 0);
-                mSelectLayout.addItem(R.drawable.search_engine_taobao, 0);
+                mSelectLayout.addItem(R.drawable.search_engine_baidu, R.string.baidu);
+                mSelectLayout.addItem(R.drawable.search_engine_google, R.string.google);
+                mSelectLayout.addItem(R.drawable.search_engine_novel, R.string.nevel);
+                mSelectLayout.addItem(R.drawable.search_engine_video, R.string.video);
+                mSelectLayout.addItem(R.drawable.search_engine_taobao, R.string.taobao);
                 mSelectLayout.setSelectPosition(3);
                 mSelectLayout.startExpand();
                 mSelectLayout.setOnItemSelectListener(this);

@@ -3,6 +3,8 @@ package com.seekting.study.view;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -17,23 +19,28 @@ import android.view.View.OnClickListener;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.seekting.study.R;
 
 public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListener,
         AnimatorUpdateListener, OnClickListener {
 
-    LayoutInflater mLayoutInflater;
+    private static final String TAG = "ExpandAniLinearLayout";
+    private LayoutInflater mLayoutInflater;
     private static final float END_FRAME = 100;
-    private static final int BACK_TIME = 300;
-    private static final int DOWN_TIME = 1500;
-    PropertyValuesHolder mTranslate;
-    ValueAnimator mAnimator;
-    int currentIndex = 0;
+    private static final int BACK_TIME = 100;
+    private static final int SCALE_TIME = 100;
+    private static final int DOWN_TIME = 1000;
+    private PropertyValuesHolder mTranslate;
+    private ValueAnimator mAnimator;
     private int mItemHeight;
     private onItemSelectListener onItemSelectListener;
     private int mSelectPosition;
     private int mItemBgRes;
+    private static final float overAni = 0.1f;
+    private boolean mCareAni = true;
+    private int mCurrentbackAni = -1;
 
     public ExpandAniLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -44,7 +51,6 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
         Keyframe maskEnd = Keyframe.ofFloat(1f, END_FRAME);
         mTranslate = PropertyValuesHolder.ofKeyframe("translate", maskBegin, maskEnd);
         mAnimator = ObjectAnimator.ofPropertyValuesHolder(this, mTranslate);
-        mAnimator.setInterpolator(new OvershootInterpolator());
         mAnimator.setDuration(DOWN_TIME);
         mAnimator.addUpdateListener(this);
         mAnimator.addListener(this);
@@ -52,33 +58,57 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         if (mAnimator.isRunning()) {
             return true;
         } else {
-            return super.onInterceptTouchEvent(ev);
+            return super.dispatchTouchEvent(ev);
         }
     }
 
     private void backAnimator(View child) {
         ObjectAnimator result = ObjectAnimator.ofFloat(child, "translationY",
-                child.getTranslationY(), -1 * child.getTranslationY(), 0);
-        result.setDuration(BACK_TIME);
-        result.setInterpolator(new OvershootInterpolator());
-        result.start();
-    }
-
-    private void backEndAnimator(View child) {
-        ObjectAnimator result = ObjectAnimator.ofFloat(child, "translationY",
                 child.getTranslationY(), 0);
-        result.setDuration(DOWN_TIME / getChildCount());
-        result.setInterpolator(new OvershootInterpolator());
+        result.setDuration(BACK_TIME);
+        result.setInterpolator(new OvershootInterpolator(6));
+        result.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                ObjectAnimator objectAnimator = (ObjectAnimator) animation;
+                AnimatorSet animatorSet = new AnimatorSet();
+                View child = (View) objectAnimator.getTarget();
+                if (indexOfChild(child) == mSelectPosition) {
+                    child.setSelected(true);
+                    View bg = child.findViewById(R.id.search_item_bg);
+                    ObjectAnimator scaleX = ObjectAnimator.ofFloat(bg, "alpha",
+                            0, 1);
+                    animatorSet.setDuration(SCALE_TIME);
+                    scaleX.start();
+                }
+                View title = child.findViewById(R.id.title);
+                title.setPivotX(0);
+                title.setPivotY(0);
+                title.setVisibility(View.VISIBLE);
+                ObjectAnimator scaleX = ObjectAnimator.ofFloat(title, "scaleX",
+                        0, 1);
+                ObjectAnimator scaleY = ObjectAnimator.ofFloat(title, "scaleY",
+                        0, 1);
+                animatorSet.play(scaleX);
+                animatorSet.play(scaleY);
+                animatorSet.setDuration(SCALE_TIME);
+                animatorSet.start();
+            }
+
+        });
         result.start();
     }
 
     public void addItem(int iconId, int titleId) {
         View child = mLayoutInflater.inflate(R.layout.search_engine_ani_item, null);
-        child.setBackgroundResource(mItemBgRes);
+        child.findViewById(R.id.search_item_bg).setBackgroundResource(mItemBgRes);
+        TextView title = (TextView) child.findViewById(R.id.title);
+        title.setText(titleId);
+        title.setVisibility(View.INVISIBLE);
         ImageView icon = (ImageView) child.findViewById(R.id.icon);
         icon.setImageResource(iconId);
         int height = (int) getResources().getDimension(R.dimen.search_item_height);
@@ -97,12 +127,15 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
             child.setVisibility(View.INVISIBLE);
+            child.findViewById(R.id.title).setVisibility(View.INVISIBLE);
+            child.setSelected(false);
         }
     }
 
     public void startExpand() {
         hideAll();
-        currentIndex = 0;
+        mCareAni = true;
+        mCurrentbackAni=-1;
         mAnimator.start();
 
     }
@@ -122,14 +155,6 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
     @Override
     public void onAnimationEnd(Animator animation) {
 
-        if (animation == mAnimator) {
-            updateSelectBackground();
-        }
-    }
-
-    private void updateSelectBackground() {
-
-        getChildAt(mSelectPosition).setSelected(true);
     }
 
     @Override
@@ -142,89 +167,53 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
 
     }
 
-    public void onAnimationUpdate1(ValueAnimator animation) {
+    public void onAnimationUpdate(ValueAnimator animation) {
 
-        if (animation == mAnimator) {
-            if (currentIndex == getChildCount() - 1) {
-                return;
-            }
+        if (mCareAni && animation == mAnimator) {
+            int aniCount = getChildCount() + 1;
+
             float y = Float.valueOf(animation.getAnimatedValue().toString());
-            // 拿到第几个动画
-            int index = (int) (y * getChildCount() / END_FRAME);
+            int index = (int) (y * aniCount / END_FRAME);
 
-            if (index < getChildCount()) {
-                float childAnimatorY = (y - index * END_FRAME / getChildCount())
-                        / (END_FRAME / getChildCount());
+            if (index < aniCount) {
+                float childAnimatorY = (y - index * END_FRAME / aniCount)
+                        / (END_FRAME / aniCount);
                 float currentTranslateY = (childAnimatorY - 1) * mItemHeight;
                 if (index > 0) {
-                    View pre = getChildAt(index - 1);
-                    if (childAnimatorY < 0.5) {
+                    int preIndex = index - 1;
+                    View pre = getChildAt(preIndex);
+                    if (childAnimatorY < overAni) {
                         float preTranslateY = childAnimatorY * mItemHeight;
                         pre.setTranslationY(preTranslateY);
                     } else {
-                        backAnimator(pre);
+                        if (mCurrentbackAni < preIndex) {
+                            mCurrentbackAni = preIndex;
+                            backAnimator(pre);
+                        }
                     }
 
                 }
-                View current = getChildAt(index);
-                current.setTranslationY(currentTranslateY);
+                if (index < getChildCount()) {
+                    View current = getChildAt(index);
+                    current.setVisibility(View.VISIBLE);
+                    translateY(current, currentTranslateY);
+                }
 
-            } else {
             }
         }
     }
 
-    public void onAnimationUpdate(ValueAnimator animation) {
-
-        if (animation == mAnimator) {
-            if (currentIndex == getChildCount() - 1) {
-                return;
-            }
-            float y = Float.valueOf(animation.getAnimatedValue().toString());
-            // 拿到第几个动画
-            int index = (int) (y * getChildCount() / END_FRAME);
-
-            if (index < getChildCount()) {
-                // System.out.println("xxx" + index);
-                if (index != currentIndex) {
-                    View prechild = getChildAt(currentIndex);
-                    backAnimator(prechild);
-                    System.out.println("back" + currentIndex);
-                    currentIndex = index;
-                }
-                View child = getChildAt(index);
-                child.setVisibility(View.VISIBLE);
-                float childAnimatorY = (y - index * END_FRAME / getChildCount())
-                        / (END_FRAME / getChildCount());
-                float translateY = (childAnimatorY - 1) * mItemHeight;
-                // System.out.println("xxx" + translateY + "index" + index);
-                if (index == getChildCount() - 1) {
-                    child.setTranslationY(-mItemHeight);
-                    backEndAnimator(getChildAt(index));
-                    System.out.println("start__");
-                } else {
-                    child.setTranslationY(translateY);
-                }
-
-            } else {
-                if (index == getChildCount() && currentIndex != index) {
-                    backAnimator(getChildAt(3));
-                    currentIndex = index;
-                }
-
-            }
+    private void translateY(View target, float y) {
+        if (target != null) {
+            target.setTranslationY(y);
         }
+
     }
 
     @Override
     public void onClick(View v) {
-
         if (onItemSelectListener != null) {
             int position = indexOfChild(v);
-//            for (int i = 0; i < getChildCount(); i++) {
-//                View child = getChildAt(i);
-//                child.setSelected(i == position);
-//            }
             onItemSelectListener.onSelect(position);
         }
     }
