@@ -23,9 +23,8 @@ import android.widget.TextView;
 
 import com.seekting.study.R;
 
-public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListener,
+public class ExpandAniLinearLayout extends LinearLayout implements
         AnimatorUpdateListener, OnClickListener {
-
     private static final String TAG = "ExpandAniLinearLayout";
     private LayoutInflater mLayoutInflater;
     private static final float END_FRAME = 100;
@@ -41,20 +40,41 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
     private static final float overAni = 0.1f;
     private boolean mCareAni = true;
     private int mCurrentbackAni = -1;
+    private AnimatorListenerAdapter mAnimatorListener;
 
     public ExpandAniLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mLayoutInflater = LayoutInflater.from(context);
         mItemHeight = (int) (context.getResources().getDimension(R.dimen.search_item_height));
         setChildrenDrawingOrderEnabled(true);
-        Keyframe maskBegin = Keyframe.ofFloat(0f, 0);
-        Keyframe maskEnd = Keyframe.ofFloat(1f, END_FRAME);
-        mTranslate = PropertyValuesHolder.ofKeyframe("translate", maskBegin, maskEnd);
-        mAnimator = ObjectAnimator.ofPropertyValuesHolder(this, mTranslate);
+        mAnimator = ValueAnimator.ofFloat(0, END_FRAME);
         mAnimator.setDuration(DOWN_TIME);
         mAnimator.addUpdateListener(this);
-        mAnimator.addListener(this);
+        mAnimatorListener = new AnimatorListenerAdapter() {
+            private boolean mCanceld = false;
 
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mCanceld = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (animation == mAnimator && !mCanceld) {
+                    resumeAllChildSafely();
+                }
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mCanceld = true;
+                setChildVisibility(false);
+
+            }
+
+        };
+        mAnimator.addListener(mAnimatorListener);
     }
 
     @Override
@@ -66,41 +86,49 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
         }
     }
 
-    private void backAnimator(View child) {
+    private void backAnimator(final View child) {
+        final View title = child.findViewById(R.id.title);
+        AnimatorSet childAnimatorSet = new AnimatorSet();
         ObjectAnimator result = ObjectAnimator.ofFloat(child, "translationY",
                 child.getTranslationY(), 0);
-        result.setDuration(BACK_TIME);
-        result.setInterpolator(new OvershootInterpolator(6));
+        final boolean select = indexOfChild(child) == mSelectPosition;
+        AnimatorListenerAdapter animatorListenerAdapter = new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                setChildVisible(child, false);
+
+            }
+        };
         result.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                ObjectAnimator objectAnimator = (ObjectAnimator) animation;
-                AnimatorSet animatorSet = new AnimatorSet();
-                View child = (View) objectAnimator.getTarget();
-                if (indexOfChild(child) == mSelectPosition) {
-                    child.setSelected(true);
-                    View bg = child.findViewById(R.id.search_item_bg);
-                    ObjectAnimator scaleX = ObjectAnimator.ofFloat(bg, "alpha",
-                            0, 1);
-                    animatorSet.setDuration(SCALE_TIME);
-                    scaleX.start();
-                }
-                View title = child.findViewById(R.id.title);
                 title.setPivotX(0);
                 title.setPivotY(0);
                 title.setVisibility(View.VISIBLE);
-                ObjectAnimator scaleX = ObjectAnimator.ofFloat(title, "scaleX",
-                        0, 1);
-                ObjectAnimator scaleY = ObjectAnimator.ofFloat(title, "scaleY",
-                        0, 1);
-                animatorSet.play(scaleX);
-                animatorSet.play(scaleY);
-                animatorSet.setDuration(SCALE_TIME);
-                animatorSet.start();
+                child.setSelected(select);
             }
-
         });
-        result.start();
+        result.setDuration(BACK_TIME);
+        result.setInterpolator(new OvershootInterpolator(6));
+        if (select) {
+            final View bg = child.findViewById(R.id.search_item_bg);
+            ObjectAnimator alpha = ObjectAnimator.ofFloat(bg, "alpha",
+                    0, 1);
+            childAnimatorSet.play(alpha).after(result);
+        }
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(title, "scaleX",
+                0, 1);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(title, "scaleY",
+                0, 1);
+
+        scaleX.setDuration(SCALE_TIME);
+        scaleY.setDuration(SCALE_TIME);
+        childAnimatorSet.play(result);
+        childAnimatorSet.play(scaleX).after(result);
+        childAnimatorSet.play(scaleY).after(result);
+        childAnimatorSet.addListener(animatorListenerAdapter);
+        childAnimatorSet.start();
+        child.setTag(childAnimatorSet);
     }
 
     public void addItem(int iconId, int titleId) {
@@ -123,21 +151,49 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
         this.mSelectPosition = position;
     }
 
-    private void hideAll() {
+    private void setChildVisibility(boolean visible) {
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
-            child.setVisibility(View.INVISIBLE);
-            child.findViewById(R.id.title).setVisibility(View.INVISIBLE);
-            child.setSelected(false);
+            setChildVisible(child, visible);
+            if (i == mSelectPosition && visible) {
+                child.setSelected(visible);
+            }
+        }
+    }
+
+    private void setChildVisible(View child, boolean visible) {
+        int visiblity = visible ? View.VISIBLE : View.INVISIBLE;
+        child.setVisibility(visiblity);
+        child.findViewById(R.id.title).setVisibility(visiblity);
+        child.setSelected(false);
+    }
+
+    private void cancelAllAnimator() {
+        if (mAnimator.isRunning()) {
+            mAnimator.cancel();
+        }
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child.getTag() != null && child.getTag() instanceof AnimatorSet) {
+                AnimatorSet animatorSet = (AnimatorSet) child.getTag();
+                if (animatorSet.isRunning()) {
+                    animatorSet.cancel();
+                }
+            }
         }
     }
 
     public void startExpand() {
-        hideAll();
+        cancelAllAnimator();
+        setChildVisibility(false);
         mCareAni = true;
-        mCurrentbackAni=-1;
+        mCurrentbackAni = -1;
         mAnimator.start();
+    }
 
+    public void show() {
+        cancelAllAnimator();
+        setChildVisibility(true);
     }
 
     @Override
@@ -147,23 +203,20 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
 
     }
 
-    @Override
-    public void onAnimationStart(Animator animation) {
+    private void resumeAllChildSafely() {
 
-    }
-
-    @Override
-    public void onAnimationEnd(Animator animation) {
-
-    }
-
-    @Override
-    public void onAnimationCancel(Animator animation) {
-
-    }
-
-    @Override
-    public void onAnimationRepeat(Animator animation) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            child.setVisibility(View.VISIBLE);
+            child.setTranslationY(0);
+            child.setSelected(i == mSelectPosition);
+            View title = child.findViewById(R.id.title);
+            title.setVisibility(View.VISIBLE);
+            title.setScaleX(1);
+            title.setScaleY(1);
+            View bg = child.findViewById(R.id.search_item_bg);
+            bg.setAlpha(1);
+        }
 
     }
 
@@ -238,5 +291,4 @@ public class ExpandAniLinearLayout extends LinearLayout implements AnimatorListe
     public void setItemBgRes(int itemBgRes) {
         this.mItemBgRes = itemBgRes;
     }
-
 }
