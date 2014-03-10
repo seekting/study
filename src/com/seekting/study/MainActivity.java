@@ -55,6 +55,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
         sparseArray.append(16, new MyListViewActivity());
         sparseArray.append(17, new ShortAddressActivity());
         sparseArray.append(18, new SelectAniActivity());
+        sparseArray.append(19, new OtherProcessActivity());
     }
 
     private class MyAdapter extends BaseAdapter {
@@ -97,8 +98,17 @@ public class MainActivity extends Activity implements OnItemClickListener {
             startActivity(intent);
         } else {
             Intent intent = new Intent(MainActivity.this, sparseArray.get(position).getClass());
+            if(sparseArray.get(position) instanceof OtherProcessActivity){
+             startActivityForResult(intent, 1);   
+            }else{
             startActivity(intent);
+            }
         }
 
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("requestCode");
     }
 }

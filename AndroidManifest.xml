@@ -59,6 +59,10 @@
         </activity>
         <activity android:name="com.seekting.study.FragmentTest" >
         </activity>
+        <activity android:name="com.seekting.study.OtherProcessActivity"
+            android:process=":testother"
+             >
+        </activity>
         <activity
             android:name="com.seekting.study.SuperListViewActivity"
             android:theme="@style/K_ActionBarStyle"
