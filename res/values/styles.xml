@@ -2,13 +2,13 @@
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="AppBaseTheme" parent="android:Theme.Light">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
@@ -66,21 +66,33 @@
     </style>
 
     <style name="K_ActionBarStyle" parent="android:style/Theme.Holo.Light">
-<!--     <item name="android:actionBarItemBackground">@drawable/k_actionbar_selector</item> -->
-    <item name="android:actionBarStyle">@style/K_ActionBar</item>
-		
+
+        <!-- <item name="android:actionBarItemBackground">@drawable/k_actionbar_selector</item> -->
+        <item name="android:actionBarStyle">@style/K_ActionBar</item>
     </style>
 
     <style name="K_ActionBar" parent="android:style/Widget.Holo.Light.ActionBar">
 
         <!-- 返回按钮 -->
 
-<!--     <item name="android:homeAsUpIndicator">@drawable/back</item> -->
-    <item name="android:titleTextStyle">@style/K_ActionBar_titleStyle</item>
+
+        <!-- <item name="android:homeAsUpIndicator">@drawable/back</item> -->
+        <item name="android:titleTextStyle">@style/K_ActionBar_titleStyle</item>
     </style>
 
     <style name="K_ActionBar_titleStyle">
         <item name="android:textColor">#FFFFFF</item>
+    </style>
+    <!-- zxing -->
+    <style name="ResultButton" parent="@android:style/Widget.Holo.Button.Borderless.Small">
+        <item name="android:layout_width">0dip</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="ShareButton" parent="@android:style/Widget.Holo.Button.Borderless.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
 </resources>

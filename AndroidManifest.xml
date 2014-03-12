@@ -9,8 +9,8 @@
         android:targetSdkVersion="14" />
 
     <application
-        android:allowBackup="true"
         android:name=".App"
+        android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -60,10 +60,9 @@
         </activity>
         <activity android:name="com.seekting.study.FragmentTest" >
         </activity>
-        <activity android:name="com.seekting.study.OtherProcessActivity"
-            android:process=":Other"
-            
-             >
+        <activity
+            android:name="com.seekting.study.OtherProcessActivity"
+            android:process=":Other" >
         </activity>
         <activity
             android:name="com.seekting.study.SuperListViewActivity"
@@ -72,13 +71,22 @@
         </activity>
         <activity android:name="com.seekting.study.MyListViewActivity" >
         </activity>
+        <activity android:name="com.seekting.study.QRCodeActivity" />
+        <activity android:name="com.seekting.study.QRCodeResultActivity" />
+        <activity android:name="com.ijinshan.browser.qrcode.CaptureActivity" />
     </application>
 
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="com.qihoo360.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- zxing -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
 </manifest>
