@@ -5,6 +5,7 @@
 
     <drawable name="search_engine_select">#ffE5E5E5</drawable>
     <drawable name="search_engine_unselect">#00ffffff</drawable>
+    <drawable name="divider_black">#ff000000</drawable>
     <!-- zxing -->
     <color name="contents_text">#ff000000</color>
     <color name="encode_view">#ffffffff</color>
@@ -19,5 +20,9 @@
     <color name="viewfinder_laser">#ffcc0000</color>
  <!-- Android standard ICS color -->
     <color name="viewfinder_mask">#60000000</color>
+    
+    <color name="qr_result_btn">#8c000000</color>
+    <color name="qr_result_txt">#bc000000</color>
+    <color name="qr_result_link_txt">#ff2d77bb</color>
 
 </resources>

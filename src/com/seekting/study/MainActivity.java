@@ -57,6 +57,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
         sparseArray.append(18, new SelectAniActivity());
         sparseArray.append(19, new OtherProcessActivity());
         sparseArray.append(20, new QRCodeActivity());
+        sparseArray.append(21, new QRCodeResultActivity());
     }
 
     private class MyAdapter extends BaseAdapter {

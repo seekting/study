@@ -52,11 +52,38 @@ public class OtherProcessActivity extends BaseActivity {
         intent.putExtra(ContactsContract.Intents.Insert.JOB_TITLE, "软件工程师");// 地址显示在地址框
         intent.putExtra(ContactsContract.Intents.Insert.NOTES, "备注");// 地址显示在地址框
         ArrayList<ContentValues> data = new ArrayList<ContentValues>();
-
         ContentValues row2 = new ContentValues();
         row2.put(ContactsContract.Contacts.Data.MIMETYPE,
                 ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE);
         row2.put(ContactsContract.CommonDataKinds.Website.URL, "www.baidu.com");
+
+        data.add(row2);
+
+        row2 = new ContentValues();
+        row2.put(ContactsContract.Contacts.Data.MIMETYPE,
+                ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE);
+        row2.put(ContactsContract.CommonDataKinds.Website.URL, "www.yahu.com");
+        data.add(row2);
+        row2 = new ContentValues();
+        row2.put(ContactsContract.Contacts.Data.MIMETYPE,
+                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        row2.put(ContactsContract.CommonDataKinds.Phone.NUMBER, "136944456456");
+        data.add(row2);
+        row2 = new ContentValues();
+        row2.put(ContactsContract.Contacts.Data.MIMETYPE,
+                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        row2.put(ContactsContract.CommonDataKinds.Phone.NUMBER, "16");
+        row2.put(ContactsContract.CommonDataKinds.Phone.TYPE,
+                String.valueOf(ContactsContract.CommonDataKinds.Phone.TYPE_FAX_WORK));
+        data.add(row2);
+
+        //地址只能支持一个
+        row2 = new ContentValues();
+        row2.put(ContactsContract.Contacts.Data.MIMETYPE,
+                ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
+        row2.put(ContactsContract.CommonDataKinds.StructuredPostal.DISPLAY_NAME, "地址");
+        row2.put(ContactsContract.CommonDataKinds.StructuredPostal.TYPE,
+                ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME);
         data.add(row2);
         intent.putExtra(ContactsContract.Intents.Insert.DATA, data);
         startActivity(intent);

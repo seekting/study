@@ -73,7 +73,12 @@
         </activity>
         <activity android:name="com.seekting.study.QRCodeActivity" />
         <activity android:name="com.seekting.study.QRCodeResultActivity" />
-        <activity android:name="com.ijinshan.browser.qrcode.CaptureActivity" />
+        <activity
+            android:name="com.ijinshan.browser.qrcode.CaptureActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.seekting.study.QRCodeResultActivity"
+            android:screenOrientation="portrait" />
     </application>
 
     <uses-permission android:name="android.permission.VIBRATE" />

@@ -1,39 +1,82 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffffff"
-    android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="xxxxxxxxxxxxxxxxxxxxxxx" />
+    android:background="#fff6f6f6" >
 
     <LinearLayout
-        android:id="@+id/addressbook_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:paddingBottom="20dip"
+        android:paddingLeft="17dip"
+        android:paddingRight="17dip"
+        android:paddingTop="20dip" >
+
+        <LinearLayout
+            android:id="@+id/addressbook_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/qr_result_detail_bg"
+            android:orientation="vertical"
+            android:showDividers="middle" >
+
+            <TableLayout
+                android:id="@+id/addressbook_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dividerHeight="20dip"
+                android:dividerPadding="20dip"
+                android:orientation="vertical"
+                android:paddingBottom="23dip"
+                android:paddingLeft="15dip"
+                android:paddingRight="15dip"
+                android:paddingTop="23dip"
+                android:showDividers="middle"
+                android:shrinkColumns="0	"
+                android:stretchColumns="2" >
+            </TableLayout>
+
+            <TextView
+                android:id="@+id/qr_txt_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="23dip"
+                android:paddingLeft="15dip"
+                android:paddingRight="15dip"
+                android:paddingTop="23dip"
+                android:textColor="@color/qr_result_txt"
+                android:textSize="16sp" >
+            </TextView>
+
+            <LinearLayout
+                android:id="@+id/btns"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:showDividers="middle"
+                android:weightSum="2" >
+
+                <TextView
+                    android:id="@+id/btn_left"
+                    android:layout_width="0dip"
+                    android:layout_height="50dip"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/qr_result_copy"
+                    android:textColor="@color/qr_result_btn"
+                    android:textSize="16sp" >
+                </TextView>
+
+                <TextView
+                    android:id="@+id/btn_right"
+                    android:layout_width="0dip"
+                    android:layout_height="50dip"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@color/qr_result_btn"
+                    android:textSize="16sp" >
+                </TextView>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/add_contact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加到通讯录" />
-
-    <Button
-        android:id="@+id/copy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="复制" />
-
-    <Button
-        android:id="@+id/search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="搜索" />
-
-</LinearLayout>
+</ScrollView>

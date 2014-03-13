@@ -2,13 +2,13 @@
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="AppBaseTheme" parent="android:Theme.Light">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
@@ -93,6 +93,18 @@
     <style name="ShareButton" parent="@android:style/Widget.Holo.Button.Borderless.Small">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="qr_result_tag">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/qr_result_txt</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="qr_result_value" parent="qr_result_tag">
+        <item name="android:autoLink">all</item>
+        <item name="android:textColorLink">@color/qr_result_link_txt</item>
     </style>
 
 </resources>

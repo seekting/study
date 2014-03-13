@@ -1,20 +1,33 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:weightSum="5" >
+    android:gravity="center_vertical"
+    android:orientation="horizontal" >
 
     <TextView
         android:id="@+id/tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1.5" />
+        android:ellipsize="middle"
+        android:gravity="left|center_vertical"
+        android:textColor="@color/qr_result_txt"
+        android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="3.5" />
+        android:gravity="center"
+        android:text="@string/qr_result_divider"
+        android:textColor="@color/qr_result_txt"
+        android:textSize="16sp" />
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/value_items_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left|center_vertical"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+</TableRow>

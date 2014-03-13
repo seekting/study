@@ -1,10 +1,17 @@
 
 package com.seekting.study;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -12,9 +19,11 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.client.result.AddressBookParsedResult;
 import com.google.zxing.client.result.ParsedResult;
@@ -26,12 +35,19 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
 
     public static final String RESULT = "result";
     public ParsedResult mParsedResult;
-    private Button mAddContactBtn;
-    private Button mCopyBtn;
-    private Button mSearchBtn;
     private ClipboardManager mClipboardManager;
-    private LinearLayout mAddressBookLayout;
+    private TableLayout mAddressBookLayout;
     private LayoutInflater mLayoutInflater;
+    private LinearLayout addressbookParent;
+    private LinearLayout btns;
+    private TextView mQRResultTextView;
+    private TextView btnLeft;
+    private TextView btnRight;
+    private boolean isBookMark;
+
+    public QRCodeResultActivity() {
+        name = "qrcode";
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,127 +55,203 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
         mLayoutInflater = LayoutInflater.from(this);
         mClipboardManager = (ClipboardManager) this.getSystemService(CLIPBOARD_SERVICE);
         setContentView(R.layout.qr_result_layout);
-        mAddressBookLayout = (LinearLayout) findViewById(R.id.addressbook_layout);
-        mAddContactBtn = (Button) findViewById(R.id.add_contact);
-        mCopyBtn = (Button) findViewById(R.id.copy);
-        mSearchBtn = (Button) findViewById(R.id.search);
-        mCopyBtn.setOnClickListener(this);
-        mAddContactBtn.setOnClickListener(this);
-        mSearchBtn.setOnClickListener(this);
+        btnLeft = (TextView) findViewById(R.id.btn_left);
+        btnRight = (TextView) findViewById(R.id.btn_right);
+        mQRResultTextView = (TextView) findViewById(R.id.qr_txt_result);
+        addressbookParent = (LinearLayout) findViewById(R.id.addressbook_parent);
+        ColorDrawable colorDrawable = new DividerColorDrawable(Color.parseColor("#ffe2e2e2"));
+        colorDrawable.setBounds(0, 0, 1, 1);
+        addressbookParent.setDividerDrawable(colorDrawable);
+        btns = (LinearLayout) findViewById(R.id.btns);
+        btns.setDividerDrawable(colorDrawable);
+        mAddressBookLayout = (TableLayout) findViewById(R.id.addressbook_layout);
+        ColorDrawable dividerDrawble = new DividerColorDrawable(Color.parseColor("#00000000"));
+        int height = (int) (14 * getResources().getDisplayMetrics().density);
+        dividerDrawble.setBounds(0, 0, 1, height);
+        mAddressBookLayout.setDividerDrawable(dividerDrawble);
+        btnLeft = (TextView) findViewById(R.id.btn_left);
+        btnRight = (TextView) findViewById(R.id.btn_right);
+        btnLeft.setOnClickListener(this);
+        btnRight.setOnClickListener(this);
+        handlerIntent();
+
+        // testAddressBook();
+        // testText();
+    }
+
+    private void handlerIntent() {
         Intent intent = getIntent();
         if (intent != null) {
             Object o = intent.getSerializableExtra(RESULT);
             if (o != null && o instanceof ParsedResult) {
                 mParsedResult = (ParsedResult) intent.getSerializableExtra(RESULT);
-                if (mParsedResult.getType() == ParsedResultType.ADDRESSBOOK) {
-                    setAddressBookUi();
-                } else {
-                    setTextUi();
-                }
+                isBookMark = mParsedResult.getType() == ParsedResultType.ADDRESSBOOK;
+                setUi();
+            } else {
+//                testAddressBook();
+                testText();
             }
         }
     }
 
+    private void setUi() {
+        if (isBookMark) {
+            setAddressBookUi();
+        } else {
+            setTextUi();
+        }
+    }
+
     private void setAddressBookUi() {
+        mQRResultTextView.setVisibility(View.GONE);
+        mAddressBookLayout.setVisibility(View.VISIBLE);
+        btnRight.setText(getString(R.string.qr_result_add_contact));
         AddressBookParsedResult addressBookParsedResult = (AddressBookParsedResult) mParsedResult;
-        addTypeValueUi("鍚嶅瓧", null, addressBookParsedResult.getNames());
-        addTypeValueUi("鐢佃瘽", addressBookParsedResult.getPhoneTypes(),
+        addTypeValueUi(getString(R.string.qr_result_name), addressBookParsedResult.getNames());
+        addTypeValueUi(getString(R.string.qr_result_phone),
                 addressBookParsedResult.getPhoneNumbers());
-        addTypeValueUi("鍦板潃", addressBookParsedResult.getAddressTypes(),
+        addTypeValueUi(getString(R.string.qr_result_address),
                 addressBookParsedResult.getAddresses());
-        addTypeValueUi("閭", addressBookParsedResult.getEmailTypes(),
+        addTypeValueUi(getString(R.string.qr_result_mail),
                 addressBookParsedResult.getEmails());
-        addTypeValueUi("鍏徃", addressBookParsedResult.getOrg());
-        addTypeValueUi("鑱屼綅", addressBookParsedResult.getTitle());
-        addTypeValueUi("缃戝潃", null, addressBookParsedResult.getURLs());
-        addTypeValueUi("澶囨敞", addressBookParsedResult.getNote());
+        addTypeValueUi(getString(R.string.qr_result_org), addressBookParsedResult.getOrg());
+        addTypeValueUi(getString(R.string.qr_result_job_title), addressBookParsedResult.getTitle());
+        addTypeValueUi(getString(R.string.qr_result_website), addressBookParsedResult.getURLs());
+        addTypeValueUi(getString(R.string.qr_result_note), addressBookParsedResult.getNote());
     }
 
     private void setTextUi() {
-
+        mQRResultTextView.setVisibility(View.VISIBLE);
+        mAddressBookLayout.setVisibility(View.GONE);
+        btnRight.setText(getString(R.string.qr_result_add_contact));
+        mQRResultTextView.setText(mParsedResult.getDisplayResult());
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.search:
-                String url = generateUrl("xx");
-                if (!TextUtils.isEmpty(url)) {
-                    openUrl(url);
+            case R.id.btn_right:
+                if (isBookMark) {
+                    addContact();
+                } else {
+                    search();
                 }
                 break;
-            case R.id.copy:
-                ClipData data = ClipData.newPlainText("qr_result", "www.qrcode.com");
-                mClipboardManager.setPrimaryClip(data);
-                break;
-            case R.id.add_contact:
-                addContact();
-                break;
-
-            default:
+            case R.id.btn_left:
+                if (mParsedResult != null) {
+                    mParsedResult.toString();
+                    ClipData data = ClipData
+                            .newPlainText("qr_result", mParsedResult.getDisplayResult());
+                    mClipboardManager.setPrimaryClip(data);
+                    Toast.makeText(this, R.string.has_clip, Toast.LENGTH_LONG).show();
+                }
                 break;
         }
 
     }
 
-    private void addContact() {
-        AddressBookParsedResult addressBookParsedResult = (AddressBookParsedResult) mParsedResult;
-        String[] names = addressBookParsedResult.getNames();
-        if (names != null) {
-            for (int i = 0; i < names.length; i++) {
-
-            }
+    private void search() {
+        if (mParsedResult == null)
+            return;
+        String url = generateUrl(mParsedResult.getDisplayResult());
+        if (!TextUtils.isEmpty(url)) {
+            openUrl(url);
         }
+    }
+
+    private void addContact() {
+        if (mParsedResult == null)
+            return;
         Uri insertUri = ContactsContract.Contacts.CONTENT_URI;
         Intent intent = new Intent(Intent.ACTION_INSERT, insertUri);
-        intent.putExtra(ContactsContract.Intents.Insert.NAME, "涓枃");// 鍚嶅瓧鏄剧ず鍦ㄥ悕瀛楁
-        intent.putExtra(ContactsContract.Intents.Insert.PHONE, "12333333");// 鍙风爜鏄剧ず鍦ㄥ彿鐮佹
+        AddressBookParsedResult addressBookParsedResult = (AddressBookParsedResult) mParsedResult;
+        ArrayList<ContentValues> data = new ArrayList<ContentValues>();
+        String[] names = addressBookParsedResult.getNames();
 
+        // 加名字
+        addSubContact(intent, ContactsContract.Intents.Insert.NAME, names);
+        String[] phoneTypes = addressBookParsedResult.getPhoneTypes();
+        String[] phoneNumbers = addressBookParsedResult.getPhoneNumbers();
+        // 加电话
+        addSubContact(data, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                phoneTypes,
+                phoneNumbers);
+        // 加地址
+        addSubContact(intent, ContactsContract.Intents.Insert.POSTAL,
+                addressBookParsedResult.getAddresses());
+        // 加邮箱
+        addSubContact(data, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE,
+                ContactsContract.CommonDataKinds.Email.ADDRESS,
+                addressBookParsedResult.getEmailTypes(), addressBookParsedResult.getEmails());
+        // 加公司
+        addSubContact(intent, ContactsContract.Intents.Insert.COMPANY,
+                addressBookParsedResult.getOrg());
+        // 加职位
+        addSubContact(intent, ContactsContract.Intents.Insert.JOB_TITLE,
+                addressBookParsedResult.getTitle());
+        // 加网页
+        addSubContact(data, ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE,
+                ContactsContract.CommonDataKinds.Website.URL,
+                null, addressBookParsedResult.getURLs());
+
+        // 加备注
+        addSubContact(intent, ContactsContract.Intents.Insert.NOTES,
+                addressBookParsedResult.getNote());
+        if (data.size() > 0) {
+            intent.putExtra(ContactsContract.Intents.Insert.DATA, data);
+        }
         startActivity(intent);
 
     }
 
-    private void addTypeValueUi(String tag, String[] type, String[] value) {
-
-        if (value == null || value.length == 0) {
+    private void addSubContact(Intent intent, String tag, String... values) {
+        if (values == null || values.length == 0) {
             return;
         }
-        if (type == null) {
+        intent.putExtra(tag, values[0]);
+    }
 
-            type = getTags(tag, value.length);
+    private void addSubContact(List<ContentValues> data, String uri, String tag, String[] types,
+            String[] values) {
 
+        if (values == null) {
+            return;
         }
-        for (int i = 0; i < value.length; i++) {
-            if (i < type.length) {
-                addTypeValueUi(type[i], value[i]);
+        for (int i = 0; i < values.length; i++) {
+            if (TextUtils.isEmpty(values[i])) {
+                continue;
             }
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(ContactsContract.Contacts.Data.MIMETYPE, uri);
+            contentValues.put(tag, values[i]);
+            data.add(contentValues);
         }
     }
 
-    private void addTypeValueUi(String tag, String value) {
-        if (TextUtils.isEmpty(value)) {
+    private void addTypeValueUi(String tag, String... values) {
+        if (values == null || values.length == 0) {
             return;
         }
-        LinearLayout item = (LinearLayout) mLayoutInflater.inflate(
+        TableRow item = (TableRow) mLayoutInflater.inflate(
                 R.layout.addressbook_item, null);
+        LinearLayout itemsLayout = (LinearLayout) item.findViewById(R.id.value_items_layout);
         TextView tagText = (TextView) item.findViewById(R.id.tag);
-        TextView valeText = (TextView) item.findViewById(R.id.value);
-        tagText.setText(tag);
-        valeText.setText(value);
-        mAddressBookLayout.addView(item);
-    }
-
-    private String[] getTags(String tag, int length) {
-        if (length <= 0) {
-            return null;
+        boolean hasItem = false;
+        for (String value : values) {
+            if (TextUtils.isEmpty(value)) {
+                continue;
+            }
+            hasItem = true;
+            TextView valueText = (TextView) mLayoutInflater
+                    .inflate(R.layout.qr_result_value_text, null);
+            tagText.setText(tag);
+            valueText.setText(value);
+            itemsLayout.addView(valueText);
         }
-        String[] tags = new String[length];
-        tags[0] = tag;
-        for (int i = 1; i < length; i++) {
-            tags[i] = tag + i;
-        }
-        return tags;
 
+        if (hasItem)
+            mAddressBookLayout.addView(item);
     }
 
     private String generateUrl(String keyWord) {
@@ -173,5 +265,62 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
         setResult(Activity.RESULT_OK, intent);
         finish();
 
+    }
+
+    public static class DividerColorDrawable extends ColorDrawable {
+
+        public DividerColorDrawable(int color) {
+            super(color);
+        }
+
+        @Override
+        public int getIntrinsicHeight() {
+            Rect r = getBounds();
+            if (r != null) {
+                return r.bottom - r.top;
+            }
+            return super.getIntrinsicHeight();
+        }
+    }
+
+    private void testAddressBook() {
+        mQRResultTextView.setVisibility(View.GONE);
+        mAddressBookLayout.setVisibility(View.VISIBLE);
+        btnRight.setText(getString(R.string.qr_result_add_contact));
+        String[] names = new String[] {
+                "张三", "李四"
+        };
+        String[] phones = new String[] {
+                "13691168978", "010-7325059"
+        };
+
+        String[] addresses = new String[] {
+                "复星国际中心", "天通苑"
+        };
+
+        String[] emails = new String[] {
+                "zhangxingtingz.com",
+                "543090717@qq.com"
+        };
+        addTypeValueUi("名字", names);
+        addTypeValueUi("电话",
+                phones);
+        addTypeValueUi("地址",
+                addresses);
+        addTypeValueUi("邮箱",
+                emails);
+        addTypeValueUi("公司", "金山网络");
+        addTypeValueUi("职位", "android研发");
+        addTypeValueUi("网址",
+                "www.test.com");
+        addTypeValueUi("备注", "dota 走起");
+    }
+
+    private void testText() {
+        mQRResultTextView.setVisibility(View.VISIBLE);
+        mAddressBookLayout.setVisibility(View.GONE);
+        btnRight.setText(getString(R.string.qr_result_search));
+        mQRResultTextView
+                .setText("zhangxingtingzhangxingtingzhangxingtingzhangxingtingzhangxingting@ijinshan.com");
     }
 }

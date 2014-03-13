@@ -15,4 +15,26 @@
     <string name="video">视频</string>
     <string name="taobao">淘宝</string>
 
+    <!-- 扫描二维码 -->
+
+    <string name="qr_trip">将二维码放入框内,即可自动扫描</string>
+    <string name="qr_result_name">姓名</string>
+    <string name="qr_result_mobile">手机</string>
+    <string name="qr_result_phone">电话</string>
+    <string name="qr_result_address">地址</string>
+    <string name="qr_result_mail">邮箱</string>
+    <string name="qr_result_org">公司</string>
+    <string name="qr_result_job_title">职位</string>
+    <string name="qr_result_website">主页</string>
+    <string name="qr_result_note">备注</string>
+    <string name="qr_result_qr_code">二维码</string>
+    <string name="qr_result_contact">联系人</string>
+    <string name="qr_result_text">文本</string>
+    <string name="qr_result_copy">复制</string>
+    <string name="qr_result_search">搜索</string>
+    <string name="qr_result_add_contact">添加联系人</string>
+    <string name="qr_result_divider">&#160;:&#160;</string>
+    
+      <string name="has_clip">已复制到剪切板</string>
+
 </resources>

@@ -29,13 +29,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
@@ -61,10 +61,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     private static final String TAG = CaptureActivity.class.getSimpleName();
 
-    private static final String[] ZXING_URLS = {
-            "http://zxing.appspot.com/scan", "zxing://scan/"
-    };
-
     public static final int HISTORY_REQUEST_CODE = 0x0000bacc;
     private CameraManager cameraManager;
     private CaptureActivityHandler handler;
@@ -79,6 +75,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     private InactivityTimer inactivityTimer;
     private BeepManager beepManager;
     private static final int SEARCH_REQUEST_CODE = 1;
+    private int viewFinderTop = -1;
 
     ViewfinderView getViewfinderView() {
         return viewfinderView;
@@ -97,11 +94,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         super.onCreate(icicle);
 
         Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        // | WindowManager.LayoutParams.FLAG_FULLSCREEN);
         window.requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.capture);
-
+        viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
         hasSurface = false;
         inactivityTimer = new InactivityTimer(this);
         beepManager = new BeepManager(this);
@@ -120,9 +117,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         // wrong size and partially
         // off screen.
         cameraManager = new CameraManager(getApplication());
-
-        viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
         viewfinderView.setCameraManager(cameraManager);
+        viewfinderView.setFrameTop(getViewFinderTop());
 
         handler = null;
         lastResult = null;
@@ -148,6 +144,15 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         characterSet = null;
         characterSet = intent.getStringExtra(Intents.Scan.CHARACTER_SET);
 
+    }
+
+    private int getViewFinderTop() {
+        if (viewFinderTop == -1) {
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            viewFinderTop = (int) ((int) (Math.ceil(25 * metrics.density) / 2));
+
+        }
+        return viewFinderTop;
     }
 
     @Override
