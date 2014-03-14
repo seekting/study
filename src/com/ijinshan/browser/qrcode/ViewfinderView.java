@@ -73,7 +73,7 @@ public final class ViewfinderView extends View {
     private LinearGradient linearGradient;
     private static final int SCANNING_LEFT_RIGHT_COLOR = 0x00FFFFFF;
     private static final int SCANNING_Middle_COLOR = 0xFFFFFFFF;
-
+    private static final int AROUND_COLOR = 0XFFFB8C15;
     private static final int AROUND_WIDTH = 5;
     private static final int AROUND_GAP = 3;
     private static final int AROUND_LENGTH = 25;
@@ -82,6 +82,8 @@ public final class ViewfinderView extends View {
     private float scanningLineHeight;
     private float scanningLinePadding;
     private String trip;
+    private static final int TRIP_POSITION = 100;
+    private static final float TRIP_TEXT_SIZE = 15;
 
     // This constructor is used when the class is built from an XML resource.
     public ViewfinderView(Context context, AttributeSet attrs) {
@@ -103,7 +105,7 @@ public final class ViewfinderView extends View {
         scanningLineHeight = displayMetrics.density * SCANNING_LINE_HEIGHT;
         scanningLinePadding = displayMetrics.density * SCANNING_LINE_PADDING;
         absloteFrame = new Rect();
-        
+
         trip = getResources().getString(R.string.qr_trip);
     }
 
@@ -153,7 +155,7 @@ public final class ViewfinderView extends View {
             if (drawPoints) {
                 drawPoints(canvas, previewFrame);
             }
-            drawtrips(canvas, absloteFrame);
+            drawTrips(canvas, absloteFrame);
             // Request another update at the animation interval, but only
             // repaint the laser line,
             // not the entire viewfinder mask.
@@ -165,12 +167,12 @@ public final class ViewfinderView extends View {
         }
     }
 
-    private void drawtrips(Canvas canvas, Rect frame) {
+    private void drawTrips(Canvas canvas, Rect frame) {
         int x = (frame.left + frame.right) >> 1;
-        paint.setTextSize(15 * getResources().getDisplayMetrics().density);
+        paint.setTextSize(TRIP_TEXT_SIZE * getResources().getDisplayMetrics().density);
         paint.setColor(Color.WHITE);
         paint.setTextAlign(Align.CENTER);
-        canvas.drawText(trip, x, frame.bottom + 100, paint);
+        canvas.drawText(trip, x, frame.bottom + TRIP_POSITION, paint);
     }
 
     private void drawPoints(Canvas canvas, Rect previewFrame) {
@@ -215,7 +217,8 @@ public final class ViewfinderView extends View {
      * @param frame
      */
     private void drawAround(Canvas canvas, Rect frame) {
-        paint.setColor(Color.parseColor("#fb8c15"));
+
+        paint.setColor(AROUND_COLOR);
         // canvas.drawRect(frame, paint);
         float beginLeft = frame.left - arroundGap - aroundWidth;
         float beginTop = frame.top - arroundGap - aroundWidth;
@@ -265,6 +268,7 @@ public final class ViewfinderView extends View {
                     Shader.TileMode.MIRROR);
 
         }
+
         paint.setShader(linearGradient);
         if (scanningLinePosition <= MAX_POSITION) {
             float y = frame.top + 2 + scanningLinePosition / (MAX_POSITION * 1f)

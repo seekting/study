@@ -104,6 +104,7 @@
 
     <style name="qr_result_value" parent="qr_result_tag">
         <item name="android:autoLink">all</item>
+        <item name="android:linksClickable">false</item>
         <item name="android:textColorLink">@color/qr_result_link_txt</item>
     </style>
 

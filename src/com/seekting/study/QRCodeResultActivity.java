@@ -267,6 +267,7 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
             hasItem = true;
             TextView valueText = (TextView) mLayoutInflater
                     .inflate(R.layout.qr_result_value_text, null);
+            valueText.setLinksClickable(true);
             tagText.setText(tag);
             valueText.setText(value);
             itemsLayout.addView(valueText);
