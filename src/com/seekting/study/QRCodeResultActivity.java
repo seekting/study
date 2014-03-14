@@ -65,10 +65,7 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
         btns = (LinearLayout) findViewById(R.id.btns);
         btns.setDividerDrawable(colorDrawable);
         mAddressBookLayout = (TableLayout) findViewById(R.id.addressbook_layout);
-        ColorDrawable dividerDrawble = new DividerColorDrawable(Color.parseColor("#00000000"));
-        int height = (int) (14 * getResources().getDisplayMetrics().density);
-        dividerDrawble.setBounds(0, 0, 1, height);
-        mAddressBookLayout.setDividerDrawable(dividerDrawble);
+        mAddressBookLayout.setDividerDrawable(colorDrawable);
         btnLeft = (TextView) findViewById(R.id.btn_left);
         btnRight = (TextView) findViewById(R.id.btn_right);
         btnLeft.setOnClickListener(this);
@@ -88,8 +85,8 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
                 isBookMark = mParsedResult.getType() == ParsedResultType.ADDRESSBOOK;
                 setUi();
             } else {
-                // testAddressBook();
-                testText();
+                testAddressBook();
+                // testText();
             }
         }
     }
@@ -123,7 +120,7 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
     private void setTextUi() {
         mQRResultTextView.setVisibility(View.VISIBLE);
         mAddressBookLayout.setVisibility(View.GONE);
-        btnRight.setText(getString(R.string.qr_result_add_contact));
+        btnRight.setText(getString(R.string.qr_result_search));
         mQRResultTextView.setText(mParsedResult.getDisplayResult());
     }
 
@@ -306,6 +303,16 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
             }
             return super.getIntrinsicHeight();
         }
+
+        @Override
+        public int getIntrinsicWidth() {
+            Rect r = getBounds();
+            if (r != null) {
+                return r.right - r.left;
+            }
+            return super.getIntrinsicWidth();
+        }
+
     }
 
     private void testAddressBook() {
@@ -324,7 +331,7 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
         };
 
         String[] emails = new String[] {
-                "zhangxingtingz.com",
+                "zhangxingtingz.comzhangxingtingz.comzhangxingtingz.comzhangxingtingz.comzhangxingtingz.com",
                 "543090717@qq.com"
         };
         addTypeValueUi("Ãû×Ö", names);

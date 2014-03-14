@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
+       android:paddingBottom="@dimen/qr_result_item_padding"
+        android:paddingTop="@dimen/qr_result_item_padding"
     android:orientation="horizontal" >
 
     <TextView
@@ -11,14 +12,15 @@
         android:layout_height="wrap_content"
         android:ellipsize="middle"
         android:gravity="left|center_vertical"
+        android:paddingBottom="@dimen/qr_result_item_txt_padding"
+        android:paddingTop="@dimen/qr_result_item_txt_padding"
         android:textColor="@color/qr_result_txt"
         android:textSize="16sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="26dip"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/qr_result_divider"
         android:textColor="@color/qr_result_txt"
         android:textSize="16sp" />
 

@@ -5,5 +5,7 @@
     <!-- zxing -->
     <dimen name="standard_padding">8dip</dimen>
     <dimen name="half_padding">4dip</dimen>
+    <dimen name="qr_result_item_txt_padding">3dip</dimen>
+    <dimen name="qr_result_item_padding">10dip</dimen>
 
 </resources>

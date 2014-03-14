@@ -2,6 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/qr_result_value"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingBottom="@dimen/qr_result_item_txt_padding"
+    android:paddingTop="@dimen/qr_result_item_txt_padding" >
 
 </TextView>
