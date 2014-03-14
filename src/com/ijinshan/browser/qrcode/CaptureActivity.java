@@ -61,7 +61,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     private static final String TAG = CaptureActivity.class.getSimpleName();
 
-    public static final int HISTORY_REQUEST_CODE = 0x0000bacc;
     private CameraManager cameraManager;
     private CaptureActivityHandler handler;
     private Result savedResultToShow;

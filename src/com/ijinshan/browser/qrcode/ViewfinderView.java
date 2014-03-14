@@ -30,6 +30,7 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Paint.Align;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.google.zxing.ResultPoint;
@@ -68,14 +69,18 @@ public final class ViewfinderView extends View {
     private static final int SPEED = 1;
     private int frameTop;
     private Rect absloteFrame;
-    public boolean drawPoints = false;
-    LinearGradient linearGradient;
+    private boolean drawPoints = false;
+    private LinearGradient linearGradient;
     private static final int SCANNING_LEFT_RIGHT_COLOR = 0x00FFFFFF;
     private static final int SCANNING_Middle_COLOR = 0xFFFFFFFF;
 
     private static final int AROUND_WIDTH = 5;
     private static final int AROUND_GAP = 3;
     private static final int AROUND_LENGTH = 25;
+    private static final int SCANNING_LINE_HEIGHT = 1;
+    private static final int SCANNING_LINE_PADDING = 5;
+    private float scanningLineHeight;
+    private float scanningLinePadding;
     private String trip;
 
     // This constructor is used when the class is built from an XML resource.
@@ -91,11 +96,14 @@ public final class ViewfinderView extends View {
         resultPointColor = resources.getColor(R.color.possible_result_points);
         possibleResultPoints = new ArrayList<ResultPoint>(5);
         lastPossibleResultPoints = null;
-        aroundWidth = resources.getDisplayMetrics().density * AROUND_WIDTH;
-        arroundGap = resources.getDisplayMetrics().density * AROUND_GAP;
-        aroundLength = resources.getDisplayMetrics().density * AROUND_LENGTH;
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        aroundWidth = displayMetrics.density * AROUND_WIDTH;
+        arroundGap = displayMetrics.density * AROUND_GAP;
+        aroundLength = displayMetrics.density * AROUND_LENGTH;
+        scanningLineHeight = displayMetrics.density * SCANNING_LINE_HEIGHT;
+        scanningLinePadding = displayMetrics.density * SCANNING_LINE_PADDING;
         absloteFrame = new Rect();
-
+        
         trip = getResources().getString(R.string.qr_trip);
     }
 
@@ -261,9 +269,8 @@ public final class ViewfinderView extends View {
         if (scanningLinePosition <= MAX_POSITION) {
             float y = frame.top + 2 + scanningLinePosition / (MAX_POSITION * 1f)
                     * (frame.bottom - frame.top - 2);
-            // canvas.drawLine(frame.left, y, frame.right, y, paint);
-            System.out.println("y->" + y);
-            canvas.drawRect(frame.left + 10, y - 1, frame.right - 10, y + 1, paint);
+            canvas.drawRect(frame.left + scanningLinePadding, y - scanningLineHeight, frame.right
+                    - scanningLinePadding, y + scanningLineHeight, paint);
         }
         if (scanningLinePosition > OVER_POSITION) {
             scanningLinePosition = 0;

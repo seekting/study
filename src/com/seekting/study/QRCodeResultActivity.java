@@ -88,7 +88,7 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
                 isBookMark = mParsedResult.getType() == ParsedResultType.ADDRESSBOOK;
                 setUi();
             } else {
-//                testAddressBook();
+                // testAddressBook();
                 testText();
             }
         }
@@ -224,8 +224,33 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
             }
             ContentValues contentValues = new ContentValues();
             contentValues.put(ContactsContract.Contacts.Data.MIMETYPE, uri);
+            if (uri.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+                if (types != null && types.length > i) {
+                    String type = types[i];
+
+                    parsePhoneType(contentValues, type);
+                }
+            }
             contentValues.put(tag, values[i]);
             data.add(contentValues);
+        }
+    }
+
+    private void parsePhoneType(ContentValues contentValues, String type) {
+        if (type != null) {
+            type = type.toUpperCase();
+            if (type.equals("CELL")) {
+                contentValues.put(ContactsContract.CommonDataKinds.Phone.TYPE,
+                        ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
+            } else if (type.equals("WORK")) {
+                contentValues.put(ContactsContract.CommonDataKinds.Phone.TYPE,
+                        ContactsContract.CommonDataKinds.Phone.TYPE_WORK);
+            }
+            else if (type.equals("HOME")) {
+                contentValues.put(ContactsContract.CommonDataKinds.Phone.TYPE,
+                        ContactsContract.CommonDataKinds.Phone.TYPE_HOME);
+
+            }
         }
     }
 

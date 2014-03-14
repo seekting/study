@@ -79,7 +79,7 @@ final class BeepManager implements MediaPlayer.OnCompletionListener, MediaPlayer
   }
   private static boolean shouldVibrate(SharedPreferences prefs, Context activity){
       
-      return true;
+      return false;
   }
 
   private MediaPlayer buildMediaPlayer(Context activity) {
