@@ -331,8 +331,10 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
                 "复星国际中心", "天通苑"
         };
 
+        String email = "zhangxingtingzcomzhangxingtingzcomzhangxingtingzcomzhangxingtingzcomzhangxingtingz@qq.com";
+        email="aa";
         String[] emails = new String[] {
-                "zhangxingtingz.comzhangxingtingz.comzhangxingtingz.comzhangxingtingz.comzhangxingtingz.com",
+                email,
                 "543090717@qq.com"
         };
         addTypeValueUi("名字", names);
@@ -346,7 +348,11 @@ public class QRCodeResultActivity extends BaseActivity implements OnClickListene
         addTypeValueUi("职位", "android研发");
         addTypeValueUi("网址",
                 "www.test.com");
-        addTypeValueUi("备注", "dota 走起");
+        String note = "虽然表格布局典型的子对象是表格行，实际上你可以使用任何视图类的子类， 作为表格视图的直接子对象.视图会作为只有一行并结合了所有列的单元格显示。android:stretchColumns设置所用行的第二列为扩展列,如果有三行的话，剩余空间由第二行补齐。";
+        note="bb";
+        addTypeValueUi(
+                "备注",
+                note);
     }
 
     private void testText() {

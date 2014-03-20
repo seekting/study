@@ -30,8 +30,8 @@
                 android:paddingRight="15dip"
                 android:paddingTop="6dip"
                 android:showDividers="middle"
-                android:shrinkColumns="0	"
-                android:stretchColumns="2" >
+                android:shrinkColumns="2"
+                 >
             </TableLayout>
 
             <TextView

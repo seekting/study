@@ -25,6 +25,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,6 +36,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -316,6 +321,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             Log.w(TAG, "Unexpected error initializing camera", e);
             displayFrameworkBugMessageAndExit();
         }
+//        drawLine(surfaceHolder);
     }
 
     private void displayFrameworkBugMessageAndExit() {

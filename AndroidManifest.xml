@@ -75,9 +75,13 @@
         <activity android:name="com.seekting.study.QRCodeResultActivity" />
         <activity
             android:name="com.ijinshan.browser.qrcode.CaptureActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.seekting.study.QRCodeResultActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.seekting.study.ScaningAnimatorActivity"
             android:screenOrientation="portrait" />
     </application>
 
