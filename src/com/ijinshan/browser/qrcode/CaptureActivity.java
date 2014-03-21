@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import android.R.raw;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -145,8 +146,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         inactivityTimer.onResume();
         Intent intent = getIntent();
         source = IntentSource.NONE;
-        characterSet = null;
-        characterSet = intent.getStringExtra(Intents.Scan.CHARACTER_SET);
+        characterSet = "ISO-8859-1";
 
     }
 
@@ -266,6 +266,18 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         inactivityTimer.onActivity();
         lastResult = rawResult;
         beepManager.playBeepSoundAndVibrate();
+
+        long time = System.currentTimeMillis();
+
+        // String text=rawResult.getText();
+        byte[] bytes = rawResult.getRawBytes();
+        System.out.println("begin-----------");
+        for (int i = 0; i < bytes.length; i++) {
+            System.out.println(bytes[i]);
+        }
+        System.out.println("end-----------");
+        System.out.println(System.currentTimeMillis() - time);
+
         ParsedResult parsedResult = ResultParser.parseResult(rawResult);
         Intent intent = new Intent();
         switch (parsedResult.getType()) {
@@ -321,7 +333,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             Log.w(TAG, "Unexpected error initializing camera", e);
             displayFrameworkBugMessageAndExit();
         }
-//        drawLine(surfaceHolder);
+        // drawLine(surfaceHolder);
     }
 
     private void displayFrameworkBugMessageAndExit() {

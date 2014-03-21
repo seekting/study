@@ -16,6 +16,9 @@
 
 package com.ijinshan.browser.qrcode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
@@ -58,6 +61,8 @@ public final class ViewfinderView extends View {
     private final int maskColor;
     private final int resultColor;
     private final int resultPointColor;
+    private List<ResultPoint> possibleResultPoints;
+    private List<ResultPoint> lastPossibleResultPoints;
 
     private float aroundWidth;
     private float aroundLength;
@@ -98,6 +103,8 @@ public final class ViewfinderView extends View {
         maskColor = resources.getColor(R.color.viewfinder_mask);
         resultColor = resources.getColor(R.color.result_view);
         resultPointColor = resources.getColor(R.color.possible_result_points);
+        possibleResultPoints = new ArrayList<ResultPoint>(5);
+        lastPossibleResultPoints = null;
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         aroundWidth = displayMetrics.density * AROUND_WIDTH;
         arroundGap = displayMetrics.density * AROUND_GAP;
@@ -115,7 +122,10 @@ public final class ViewfinderView extends View {
                 float f = Float.parseFloat(animation.getAnimatedValue().toString());
                 // scanningLinePosition = (int) (f * MAX_POSITION);
                 scaningLine = f;
-
+                // postInvalidate(absloteFrame.left - POINT_SIZE,
+                // absloteFrame.top - POINT_SIZE,
+                // absloteFrame.right + POINT_SIZE,
+                // absloteFrame.bottom + POINT_SIZE);
                 float y = absloteFrame.top + 2 + scaningLine
                         * (absloteFrame.bottom - absloteFrame.top - 2);
                 int y1 = (int) (y - scanningLineHeight - 1);
@@ -123,14 +133,10 @@ public final class ViewfinderView extends View {
                 // canvas.drawRect(frame.left + scanningLinePadding, y -
                 // scanningLineHeight, frame.right
                 // - scanningLinePadding, y + scanningLineHeight, paint);
-                // invalidate(absloteFrame.left - POINT_SIZE,
-                // y1,
-                // absloteFrame.right + POINT_SIZE,
-                // y2);
-                postInvalidate(absloteFrame.left - POINT_SIZE,
-                        absloteFrame.top - POINT_SIZE,
+                invalidate(absloteFrame.left - POINT_SIZE,
+                        y1,
                         absloteFrame.right + POINT_SIZE,
-                        absloteFrame.bottom + POINT_SIZE);
+                        y2);
             }
         });
         mAnimator.setRepeatMode(ValueAnimator.RESTART);
@@ -146,25 +152,17 @@ public final class ViewfinderView extends View {
         this.cameraManager = cameraManager;
     }
 
-    Rect rr;
-
     @Override
     public void onDraw(Canvas canvas) {
         if (cameraManager == null) {
             return; // not ready yet, early draw before done configuring
         }
-        if (rr == null) {
-            Rect frame = cameraManager.getFramingRect();
+        Rect frame = cameraManager.getFramingRect();
 
-            Rect previewFrame = cameraManager.getFramingRectInPreview();
-            if (frame == null || previewFrame == null) {
-                return;
-            } else {
-                rr = frame;
-            }
-            System.out.println("onDraw()");
+        Rect previewFrame = cameraManager.getFramingRectInPreview();
+        if (frame == null || previewFrame == null) {
+            return;
         }
-        Rect frame = rr;
         absloteFrame.top = frame.top - frameTop;
         absloteFrame.bottom = frame.bottom - frameTop;
         absloteFrame.left = frame.left;
@@ -189,9 +187,9 @@ public final class ViewfinderView extends View {
             // drawLaser(canvas, absloteFrame);
             drawAround(canvas, absloteFrame);
             drawScanningLine(canvas, absloteFrame);
-            // if (drawPoints) {
-            // drawPoints(canvas, previewFrame);
-            // }
+            if (drawPoints) {
+                drawPoints(canvas, previewFrame);
+            }
             drawTrips(canvas, absloteFrame);
             // Request another update at the animation interval, but only
             // repaint the laser line,
@@ -205,12 +203,48 @@ public final class ViewfinderView extends View {
     }
 
     private void drawTrips(Canvas canvas, Rect frame) {
-        // int x = (frame.left + frame.right) >> 1;
-        // paint.setTextSize(TRIP_TEXT_SIZE *
-        // getResources().getDisplayMetrics().density);
-        // paint.setColor(Color.WHITE);
-        // paint.setTextAlign(Align.CENTER);
-        // canvas.drawText(trip, x, frame.bottom + TRIP_POSITION, paint);
+        int x = (frame.left + frame.right) >> 1;
+        paint.setTextSize(TRIP_TEXT_SIZE * getResources().getDisplayMetrics().density);
+        paint.setColor(Color.WHITE);
+        paint.setTextAlign(Align.CENTER);
+        canvas.drawText(trip, x, frame.bottom + TRIP_POSITION, paint);
+    }
+
+    private void drawPoints(Canvas canvas, Rect previewFrame) {
+        float scaleX = absloteFrame.width() / (float) previewFrame.width();
+        float scaleY = absloteFrame.height() / (float) previewFrame.height();
+
+        List<ResultPoint> currentPossible = possibleResultPoints;
+        List<ResultPoint> currentLast = lastPossibleResultPoints;
+        int frameLeft = absloteFrame.left;
+        int frameTop = absloteFrame.top;
+        if (currentPossible.isEmpty()) {
+            lastPossibleResultPoints = null;
+        } else {
+            possibleResultPoints = new ArrayList<ResultPoint>(5);
+            lastPossibleResultPoints = currentPossible;
+            paint.setAlpha(CURRENT_POINT_OPACITY);
+            paint.setColor(resultPointColor);
+            synchronized (currentPossible) {
+                for (ResultPoint point : currentPossible) {
+                    canvas.drawCircle(frameLeft + (int) (point.getX() * scaleX),
+                            frameTop + (int) (point.getY() * scaleY),
+                            POINT_SIZE, paint);
+                }
+            }
+        }
+        if (currentLast != null) {
+            paint.setAlpha(CURRENT_POINT_OPACITY / 2);
+            paint.setColor(resultPointColor);
+            synchronized (currentLast) {
+                float radius = POINT_SIZE / 2.0f;
+                for (ResultPoint point : currentLast) {
+                    canvas.drawCircle(frameLeft + (int) (point.getX() * scaleX),
+                            frameTop + (int) (point.getY() * scaleY),
+                            radius, paint);
+                }
+            }
+        }
     }
 
     /**
@@ -219,47 +253,40 @@ public final class ViewfinderView extends View {
      */
     private void drawAround(Canvas canvas, Rect frame) {
 
-        // paint.setColor(AROUND_COLOR);
-        // // canvas.drawRect(frame, paint);
-        // float beginLeft = frame.left - arroundGap - aroundWidth;
-        // float beginTop = frame.top - arroundGap - aroundWidth;
-        // float endRight = frame.right + arroundGap + aroundWidth;
-        // float endBottom = frame.bottom + arroundGap + aroundWidth;
-        // // left,top -
-        // canvas.drawRect(beginLeft, beginTop, beginLeft + aroundLength,
-        // beginTop
-        // + aroundWidth,
-        // paint);
-        // // left,top |
-        // canvas.drawRect(beginLeft, beginTop, beginLeft + aroundWidth,
-        // beginTop + aroundLength,
-        // paint);
-        // // right,top -
-        // canvas.drawRect(endRight - aroundLength, beginTop, endRight, beginTop
-        // + aroundWidth,
-        // paint);
-        // // right,top |
-        // canvas.drawRect(endRight - aroundWidth, beginTop, endRight, beginTop
-        // + aroundLength,
-        // paint);
-        // // left,bottom -
-        // canvas.drawRect(beginLeft, endBottom - aroundWidth, beginLeft +
-        // aroundLength, endBottom
-        // ,
-        // paint);
-        // // left,bottom |
-        // canvas.drawRect(beginLeft, endBottom - aroundLength, beginLeft +
-        // aroundWidth, endBottom,
-        // paint);
-        // // right,bottom -
-        // canvas.drawRect(endRight - aroundLength, endBottom - aroundWidth,
-        // endRight, endBottom
-        // ,
-        // paint);
-        // // right,bottom |
-        // canvas.drawRect(endRight - aroundWidth, endBottom - aroundLength,
-        // endRight, endBottom,
-        // paint);
+        paint.setColor(AROUND_COLOR);
+        // canvas.drawRect(frame, paint);
+        float beginLeft = frame.left - arroundGap - aroundWidth;
+        float beginTop = frame.top - arroundGap - aroundWidth;
+        float endRight = frame.right + arroundGap + aroundWidth;
+        float endBottom = frame.bottom + arroundGap + aroundWidth;
+        // left,top -
+        canvas.drawRect(beginLeft, beginTop, beginLeft + aroundLength, beginTop
+                + aroundWidth,
+                paint);
+        // left,top |
+        canvas.drawRect(beginLeft, beginTop, beginLeft + aroundWidth, beginTop + aroundLength,
+                paint);
+        // right,top -
+        canvas.drawRect(endRight - aroundLength, beginTop, endRight, beginTop
+                + aroundWidth,
+                paint);
+        // right,top |
+        canvas.drawRect(endRight - aroundWidth, beginTop, endRight, beginTop + aroundLength,
+                paint);
+        // left,bottom -
+        canvas.drawRect(beginLeft, endBottom - aroundWidth, beginLeft + aroundLength, endBottom
+                ,
+                paint);
+        // left,bottom |
+        canvas.drawRect(beginLeft, endBottom - aroundLength, beginLeft + aroundWidth, endBottom,
+                paint);
+        // right,bottom -
+        canvas.drawRect(endRight - aroundLength, endBottom - aroundWidth, endRight, endBottom
+                ,
+                paint);
+        // right,bottom |
+        canvas.drawRect(endRight - aroundWidth, endBottom - aroundLength, endRight, endBottom,
+                paint);
     }
 
     /**
@@ -276,19 +303,19 @@ public final class ViewfinderView extends View {
                     }, null,
                     Shader.TileMode.MIRROR);
             scanPaint.setShader(linearGradient);
-
+          
         }
         float y = frame.top + 2 + scaningLine
                 * (frame.bottom - frame.top - 2);
-        Drawable shapeDrawable = getResources().getDrawable(R.drawable.scann_line);
+        Drawable shapeDrawable=getResources().getDrawable(R.drawable.scann_line);
         shapeDrawable.setBounds(frame.left, 0, frame.right
                 , 10);
-
+        
+//        canvas.drawRect(frame.left + scanningLinePadding, y - scanningLineHeight, frame.right
+//                - scanningLinePadding, y + scanningLineHeight, scanPaint);
         canvas.save();
         canvas.translate(0, y);
-        // // shapeDrawable.draw(canvas);
-        canvas.drawRect(frame.left + scanningLinePadding, -scanningLineHeight, frame.right
-                - scanningLinePadding, scanningLineHeight, scanPaint);
+//        shapeDrawable.draw(canvas);
         canvas.restore();
         // if (scanningLinePosition > OVER_POSITION) {
         // scanningLinePosition = 0;
@@ -299,7 +326,12 @@ public final class ViewfinderView extends View {
     }
 
     public void drawViewfinder() {
-
+        Bitmap resultBitmap = this.resultBitmap;
+        this.resultBitmap = null;
+        if (resultBitmap != null) {
+            resultBitmap.recycle();
+        }
+        invalidate();
     }
 
     /**
@@ -308,9 +340,21 @@ public final class ViewfinderView extends View {
      * 
      * @param barcode An image of the decoded barcode.
      */
+    public void drawResultBitmap(Bitmap barcode) {
+        resultBitmap = barcode;
+        invalidate();
+    }
 
     public void addPossibleResultPoint(ResultPoint point) {
-
+        List<ResultPoint> points = possibleResultPoints;
+        synchronized (points) {
+            points.add(point);
+            int size = points.size();
+            if (size > MAX_RESULT_POINTS) {
+                // trim it
+                points.subList(0, size - MAX_RESULT_POINTS / 2).clear();
+            }
+        }
     }
 
 }
