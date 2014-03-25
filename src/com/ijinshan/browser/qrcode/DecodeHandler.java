@@ -33,6 +33,7 @@ import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
+import com.ijinshan.browser.qrcode.camera.CameraManager;
 import com.seekting.study.R;
 
 final class DecodeHandler extends Handler {
@@ -85,6 +86,10 @@ final class DecodeHandler extends Handler {
         width = height;
         height = tmp;
         data = rotatedData;
+        CameraManager cameraManager=activity.getCameraManager();
+        if(cameraManager==null){
+            return;
+        }
         PlanarYUVLuminanceSource source = activity.getCameraManager().buildLuminanceSource(data,
                 width, height);
         if (source != null) {

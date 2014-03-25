@@ -72,7 +72,7 @@ public final class CaptureActivityHandler extends Handler {
 
     // Start ourselves capturing previews and decoding.
     this.cameraManager = cameraManager;
-    cameraManager.startPreview();
+//    cameraManager.startPreview();
     restartPreviewAndDecode();
   }
 
@@ -140,7 +140,7 @@ public final class CaptureActivityHandler extends Handler {
 
   public void quitSynchronously() {
     state = State.DONE;
-    cameraManager.stopPreview();
+    
     Message quit = Message.obtain(decodeThread.getHandler(), R.id.quit);
     quit.sendToTarget();
     try {

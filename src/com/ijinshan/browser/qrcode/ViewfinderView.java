@@ -103,6 +103,7 @@ public final class ViewfinderView extends View {
     private float titleHeight;
     private OnViewFinderListener onViewFinderListener;
     private int action;
+    private boolean hasCameraManager;
 
     // This constructor is used when the class is built from an XML resource.
     public ViewfinderView(Context context, AttributeSet attrs) {
@@ -206,6 +207,10 @@ public final class ViewfinderView extends View {
         this.action = action;
         closeAnimator.start();
     }
+    public void initCamera(){
+        shutDownpersent=1f;
+        postInvalidate();
+    }
 
     public void openCamera() {
         openAnimator.setStartDelay(OPEN_DELAY_TIME);
@@ -217,23 +222,18 @@ public final class ViewfinderView extends View {
         openAnimator.start();
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        openCamera();
-    }
-
     public void setFrameTop(int top) {
         this.frameTop = top;
     }
 
     public void setCameraManager(CameraManager cameraManager) {
+        hasCameraManager = cameraManager != null;
         this.cameraManager = cameraManager;
     }
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (cameraManager != null) {
+        if (hasCameraManager) {
 
             Rect frame = cameraManager.getFramingRect();
 

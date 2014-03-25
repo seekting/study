@@ -1,12 +1,15 @@
 
 package com.ijinshan.browser.qrcode;
 
+import com.ijinshan.browser.qrcode.camera.CameraManager;
+
 import android.os.Handler;
 import android.os.HandlerThread;
 
 public class CameraOpenHelper {
     private static CameraOpenHelper cameraOpenHelper;
 
+    private static final String TAG = "Helper";
     private HandlerThread handlerThread;
     private Handler handler;
     private OnCameraListener onCameraListener;
@@ -15,8 +18,10 @@ public class CameraOpenHelper {
     private ActivityStatus activityStatus;
 
     private CameraOpenHelper() {
+        handlerThread = new HandlerThread("camera-onpen-helper");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
+        setCameraStatus(CameraStatus.PrepareOpen);
     }
 
     public static CameraOpenHelper getInstance() {
@@ -30,65 +35,100 @@ public class CameraOpenHelper {
         return cameraOpenHelper;
     }
 
-    public void regist(CaptureActivity captureActivity) {
-        this.captureActivity = captureActivity;
+    public void onCreate(CaptureActivity captureActivity) {
         activityStatus = ActivityStatus.OnCreate;
+        this.captureActivity = captureActivity;
+        setOnCameraListener(captureActivity);
     }
 
-    public void unRegist(CaptureActivity captureActivity) {
+    public void onDestory(CaptureActivity captureActivity) {
+        activityStatus = ActivityStatus.OnDestory;
         if (this.captureActivity == captureActivity)
         {
             this.captureActivity = null;
+            onCameraListener = null;
         }
-        activityStatus = ActivityStatus.OnDestory;
     }
 
     public void onResume() {
+        System.out.println("onResume");
+
         activityStatus = ActivityStatus.OnResume;
+        if (getCameraStatus() == CameraStatus.PrepareOpen) {
+            System.out.println(TAG + "onResume有效");
+            System.out.println("ca openCamera onResume");
+            openCamera();
+        }
     }
 
     public void onPause() {
         activityStatus = ActivityStatus.OnPause;
+        if (getCameraStatus() == CameraStatus.Opened) {
+            closeCamera();
+        }
 
     }
 
     public void openCamera() {
-
+        setCameraStatus(CameraStatus.Opening);
         handler.post(new Runnable() {
 
             @Override
             public void run() {
 
-                tryOpenCamera();
-                if (activityStatus == ActivityStatus.OnResume) {
-                    // captureActivity
-
+                doOpenCamera();
+                if (activityStatus == ActivityStatus.OnPause) {
+                    closeCamera();
                 }
             }
         });
     }
 
-    private void tryOpenCamera() {
-        if (cameraStatus == CameraStatus.PrepareOpen) {
-            // TODO doOpen
-            cameraStatus = CameraStatus.Opened;
-        } else {
+    private void doOpenCamera() {
 
+        if (captureActivity != null) {
+            captureActivity.onCameraOpen();
+            setCameraStatus(CameraStatus.Opened);
         }
+
     }
 
-    private void tryCloseCamera() {
-        cameraStatus = CameraStatus.Closing;
+    public synchronized void setCameraStatus(CameraStatus status) {
+        cameraStatus = status;
+    }
 
-        cameraStatus = CameraStatus.PrepareOpen;
+    private synchronized CameraStatus getCameraStatus() {
+        return cameraStatus;
+    }
+
+    private void doCloseCamera() {
+
+        if (cameraManager != null) {
+            System.out.println("doCloseDriver");
+            cameraManager.stopPreview();
+            cameraManager.closeDriver();
+            setCameraStatus(CameraStatus.PrepareOpen);
+        } else {
+            System.out.println("!!!!cameraManager=null");
+        }
+        if (captureActivity != null) {
+            captureActivity.onCameraClose();
+        }
+
     }
 
     public void closeCamera() {
+        setCameraStatus(CameraStatus.Closing);
         handler.post(new Runnable() {
 
             @Override
             public void run() {
-                tryCloseCamera();
+                doCloseCamera();
+                if (activityStatus == ActivityStatus.OnResume) {
+                    System.out.println("ca openCamera closeCamera");
+
+                    openCamera();
+                }
             }
         });
     }
@@ -106,7 +146,9 @@ public class CameraOpenHelper {
     }
 
     public static interface OnCameraListener {
-        public void onCameraClosed();
+        public void onCameraClose();
+
+        public void onCameraOpen();
 
     }
 
@@ -118,13 +160,41 @@ public class CameraOpenHelper {
         this.onCameraListener = onCameraListener;
     }
 
-    private enum CameraStatus {
-        PrepareOpen, Opening, Opened, Closing
+    /**
+     * PrepareOpen->opening->opened->Closing->PrepareOpen
+     */
+    public enum CameraStatus {
+        /**
+         * 可以开启
+         */
+        PrepareOpen,
+        /**
+         * 开启中
+         */
+        Opening,
+        /**
+         * 已经是开启状态
+         */
+        Opened,
+        /**
+         * 关闭中
+         */
+        Closing
 
     }
 
     private enum ActivityStatus {
         OnCreate, OnResume, OnPause, OnDestory
 
+    }
+
+    CameraManager cameraManager;
+
+    public void setCameraManager(CameraManager cameraManager) {
+        this.cameraManager = cameraManager;
+    }
+
+    public CameraManager getCameraManager() {
+        return cameraManager;
     }
 }

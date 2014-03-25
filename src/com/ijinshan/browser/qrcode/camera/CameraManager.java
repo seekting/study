@@ -23,6 +23,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -75,8 +76,10 @@ public final class CameraManager {
    * @throws IOException Indicates the camera driver failed to open.
    */
   public synchronized void openDriver(SurfaceHolder holder) throws IOException {
+      System.out.println("camera-driver.openDriver");
     Camera theCamera = camera;
     if (theCamera == null) {
+        SystemClock.sleep(3000);
       theCamera = OpenCameraInterface.open();
       if (theCamera == null) {
         throw new IOException();
@@ -120,6 +123,7 @@ public final class CameraManager {
   }
 
   public synchronized boolean isOpen() {
+      System.out.println("isOpen");
     return camera != null;
   }
 
@@ -127,7 +131,9 @@ public final class CameraManager {
    * Closes the camera driver if still in use.
    */
   public synchronized void closeDriver() {
+      System.out.println("camera-driver.closeDriver");
     if (camera != null) {
+      SystemClock.sleep(5000);
       camera.release();
       camera = null;
       // Make sure to clear these each time we close the camera, so that any scanning rect
@@ -141,6 +147,7 @@ public final class CameraManager {
    * Asks the camera hardware to begin drawing preview frames to the screen.
    */
   public synchronized void startPreview() {
+      System.out.println("startPreview");
     Camera theCamera = camera;
     if (theCamera != null && !previewing) {
       theCamera.startPreview();
@@ -153,6 +160,7 @@ public final class CameraManager {
    * Tells the camera to stop drawing preview frames.
    */
   public synchronized void stopPreview() {
+      System.out.println("stopPreview");
     if (autoFocusManager != null) {
       autoFocusManager.stop();
       autoFocusManager = null;
@@ -175,6 +183,7 @@ public final class CameraManager {
    * @param message The what field of the message to be sent.
    */
   public synchronized void requestPreviewFrame(Handler handler, int message) {
+//      System.out.println("requestPreviewFrame");
     Camera theCamera = camera;
     if (theCamera != null && previewing) {
       previewCallback.setHandler(handler, message);
@@ -190,6 +199,7 @@ public final class CameraManager {
    * @return The rectangle to draw on screen in window coordinates.
    */
     public synchronized Rect getFramingRect() {
+//        System.out.println("getFramingRect");
         if (framingRect == null) {
             if (camera == null) {
                 return null;
@@ -217,6 +227,7 @@ public final class CameraManager {
    * not UI / screen.
    */
   public synchronized Rect getFramingRectInPreview() {
+//      System.out.println("getFramingRectInPreview");
     if (framingRectInPreview == null) {
       Rect framingRect = getFramingRect();
       if (framingRect == null) {
@@ -249,6 +260,7 @@ public final class CameraManager {
    * @param height The height in pixels to scan.
    */
   public synchronized void setManualFramingRect(int width, int height) {
+//      System.out.println("setManualFramingRect");
     if (initialized) {
       Point screenResolution = configManager.getScreenResolution();
       if (width > screenResolution.x) {
