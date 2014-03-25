@@ -21,15 +21,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import android.R.raw;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -37,7 +32,6 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -46,10 +40,10 @@ import android.view.Window;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.Result;
-import com.google.zxing.client.result.AddressBookParsedResult;
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.ResultParser;
 import com.google.zxing.client.result.URIParsedResult;
+import com.ijinshan.browser.qrcode.ViewfinderView.OnViewFinderListener;
 import com.ijinshan.browser.qrcode.camera.CameraManager;
 import com.seekting.study.QRCodeResultActivity;
 import com.seekting.study.R;
@@ -63,7 +57,8 @@ import com.seekting.study.R;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public final class CaptureActivity extends Activity implements SurfaceHolder.Callback {
+public final class CaptureActivity extends Activity implements SurfaceHolder.Callback,
+        OnViewFinderListener {
 
     private static final String TAG = CaptureActivity.class.getSimpleName();
 
@@ -82,6 +77,16 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     private static final int SEARCH_REQUEST_CODE = 1;
     private int viewFinderTop = -1;
 
+    private ParsedResult parsedResult;
+
+    private SurfaceView surfaceView;
+    private static final int FINISH = 0;
+    private static final int SHOWDETAIL = 1;
+    private boolean needOpenCamera = false;
+    private int DELAY_START_TIME = 500;
+    private int DELAY_OPEN_TIME = 800;
+    public boolean canBack = false;
+
     ViewfinderView getViewfinderView() {
         return viewfinderView;
     }
@@ -97,18 +102,20 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
+        canBack = false;
         Window window = getWindow();
         // window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
         // | WindowManager.LayoutParams.FLAG_FULLSCREEN);
         window.requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.capture);
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
+        viewfinderView.setOnViewFinderListener(this);
         hasSurface = false;
         inactivityTimer = new InactivityTimer(this);
         beepManager = new BeepManager(this);
         decodeFormats = new ArrayList<BarcodeFormat>();
         decodeFormats.add(BarcodeFormat.QR_CODE);
+        surfaceView = (SurfaceView) findViewById(R.id.preview_view);
     }
 
     @Override
@@ -130,7 +137,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
         resetStatusView();
 
-        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
         if (hasSurface) {
             // The activity was paused but not stopped, so the surface still
@@ -144,10 +150,25 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         }
         beepManager.updatePrefs();
         inactivityTimer.onResume();
-        Intent intent = getIntent();
         source = IntentSource.NONE;
         characterSet = "ISO-8859-1";
+        if (needOpenCamera) {
+            viewfinderView.openCameraDelay(DELAY_OPEN_TIME);
+            needOpenCamera = false;
+        }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        closeViewFinder(FINISH);
+    }
+
+    private void closeViewFinder(int action) {
+        if (!viewfinderView.isClosing() && !viewfinderView.isOpening() && canBack) {
+            viewfinderView.closeCamera(action);
+        }
     }
 
     private int getViewFinderTop() {
@@ -165,8 +186,15 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             if (data != null) {
                 String url = data.getAction();
                 if (!TextUtils.isEmpty(url)) {
-                    notifyLoadUrl(data.getAction());
+                    Intent intent = new Intent();
+                    intent.setAction(url);
+                    setResult(Activity.RESULT_OK, intent);
+                    super.finish();
+
                 }
+            } else {
+                needOpenCamera = true;
+                canBack = false;
             }
         }
     }
@@ -180,16 +208,17 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         inactivityTimer.onPause();
         cameraManager.closeDriver();
         if (!hasSurface) {
-            SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
             SurfaceHolder surfaceHolder = surfaceView.getHolder();
             surfaceHolder.removeCallback(this);
         }
+        viewfinderView.setVisibility(View.VISIBLE);
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
         inactivityTimer.shutdown();
+        viewfinderView.setVisibility(View.VISIBLE);
         super.onDestroy();
     }
 
@@ -263,48 +292,37 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
      * @param barcode A greyscale bitmap of the camera data which was decoded.
      */
     public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
+        if (viewfinderView.isOpening() || viewfinderView.isClosing() || !canBack) {
+            if (handler != null) {
+                handler.sendEmptyMessageDelayed(R.id.restart_preview, DELAY_START_TIME);
+            }
+            return;
+        }
         inactivityTimer.onActivity();
         lastResult = rawResult;
         beepManager.playBeepSoundAndVibrate();
+        parsedResult = ResultParser.parseResult(rawResult);
 
-        long time = System.currentTimeMillis();
-
-        // String text=rawResult.getText();
-        byte[] bytes = rawResult.getRawBytes();
-        System.out.println("begin-----------");
-        for (int i = 0; i < bytes.length; i++) {
-            System.out.println(bytes[i]);
-        }
-        System.out.println("end-----------");
-        System.out.println(System.currentTimeMillis() - time);
-
-        ParsedResult parsedResult = ResultParser.parseResult(rawResult);
-        Intent intent = new Intent();
-        switch (parsedResult.getType()) {
-            case ADDRESSBOOK:
-                AddressBookParsedResult addressBookParsedResult = (AddressBookParsedResult) parsedResult;
-                intent.setClass(this, QRCodeResultActivity.class);
-                intent.putExtra(QRCodeResultActivity.RESULT, addressBookParsedResult);
-                break;
-            case URI:
-                URIParsedResult uriResult = (URIParsedResult) parsedResult;
-                String uri = uriResult.getURI();
-                notifyLoadUrl(uri);
-                return;
-            default:
-                intent.setClass(this, QRCodeResultActivity.class);
-                intent.putExtra(QRCodeResultActivity.RESULT, parsedResult);
-                break;
+        if (parsedResult != null) {
+            switch (parsedResult.getType()) {
+                case URI:
+                    URIParsedResult uriResult = (URIParsedResult) parsedResult;
+                    String uri = uriResult.getURI();
+                    notifyLoadUrl(uri);
+                    return;
+                default:
+                    closeViewFinder(SHOWDETAIL);
+                    break;
+            }
         }
 
-        startActivityForResult(intent, SEARCH_REQUEST_CODE);
     }
 
     public void notifyLoadUrl(String url) {
         Intent intent = new Intent();
         intent.setAction(url);
         setResult(Activity.RESULT_OK, intent);
-        finish();
+        closeViewFinder(FINISH);
     }
 
     private void initCamera(SurfaceHolder surfaceHolder) {
@@ -333,14 +351,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             Log.w(TAG, "Unexpected error initializing camera", e);
             displayFrameworkBugMessageAndExit();
         }
-        // drawLine(surfaceHolder);
     }
 
     private void displayFrameworkBugMessageAndExit() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.app_name));
+        builder.setTitle(getString(R.string.s_app_name));
         builder.setMessage(getString(R.string.msg_camera_framework_bug));
-        builder.setPositiveButton(R.string.button_ok, new FinishListener(this));
+        builder.setPositiveButton(R.string.ok, new FinishListener(this));
         builder.setOnCancelListener(new FinishListener(this));
         builder.show();
     }
@@ -353,11 +370,48 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     }
 
     private void resetStatusView() {
+        surfaceView.setVisibility(View.VISIBLE);
         viewfinderView.setVisibility(View.VISIBLE);
         lastResult = null;
+
     }
 
     public void drawViewfinder() {
         viewfinderView.drawViewfinder();
+    }
+
+    @Override
+    public void onClose(int action) {
+        canBack = false;
+        surfaceView.setVisibility(View.GONE);
+        switch (action) {
+            case FINISH:
+                super.finish();
+                overridePendingTransition(R.anim.kui_activity_left_in,
+                        R.anim.kui_activity_right_out);
+                break;
+            case SHOWDETAIL:
+                Intent intent = new Intent();
+                intent.setClass(this, QRCodeResultActivity.class);
+                intent.putExtra(QRCodeResultActivity.RESULT, parsedResult);
+                startActivityForResult(intent, SEARCH_REQUEST_CODE);
+                overridePendingTransition(R.anim.kui_activity_right_in,
+                        R.anim.kui_activity_left_out);
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    @Override
+    public void finish() {
+        closeViewFinder(FINISH);
+    }
+
+    @Override
+    public void onOpen() {
+        restartPreviewAfterDelay(0);
+        canBack = true;
     }
 }

@@ -36,5 +36,7 @@
     <string name="qr_result_divider">&#160;:&#160;</string>
     
       <string name="has_clip">已复制到剪切板</string>
+      <string name="s_app_name">Study</string>
+      <string name="ok">Ok</string>
 
 </resources>
